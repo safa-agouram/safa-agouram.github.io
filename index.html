@@ -264,29 +264,28 @@
   }
 
   /* --- VISUALISATION DES NEURONES — ÉTAPE 3 --- */
-
-  :root{
-    --bg:#14171A;
-    --bg-alt:#1A1E22;
-    --surface:#1E2227;
-    --surface-2:#252A30;
-    --border:rgba(255,255,255,0.09);
-    --border-strong:rgba(255,255,255,0.16);
-    --text:#ECEAE3;
-    --text-secondary:#9BA0A6;
-    --text-muted:#5E636A;
-    --active:#33D6B6;
-    --active-dim:#1E3F39;
-    --dead:#E8593C;
-    --dead-dim:#3D2620;
-    --hook:#E8B23D;
+  .nv-wrap{
+    --bg:#ffffff;
+    --bg-alt:#faf9f6;
+    --surface:#ffffff;
+    --surface-2:#f4f4f2;
+    --border:rgba(26,26,26,0.12);
+    --border-strong:rgba(26,26,26,0.22);
+    --text:#1a1a1a;
+    --text-secondary:#555555;
+    --text-muted:#888888;
+    --active:#198f7a;
+    --active-dim:#e5f4f0;
+    --dead:#d9383a;
+    --dead-dim:#fbe8e8;
+    --hook:#b07a00;
     --font-mono:'IBM Plex Mono', monospace;
     --font-sans:'Inter', sans-serif;
   }
   *{box-sizing:border-box;}
   body{margin:0;}
   .nv-wrap{
-    background:var(--bg);
+    background:var(--bg-alt);
     color:var(--text);
     font-family:var(--font-sans);
     padding:48px 24px 40px;
