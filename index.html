@@ -592,34 +592,6 @@
 
     </section>
 
-  <section class="section" id="case-smallcnn">
-  <span class="eyebrow">04 — Case study I</span>
-  <h2>SmallCNN: validating the visualization pipeline</h2>
-
-  <p>
-    To validate the proposed approach, we first applied our visualization pipeline to a simple convolutional neural network (SmallCNN). After propagating the input data through the network, forward hooks recorded the activations of each layer during inference. These activations were then analyzed to identify neurons that never produced a positive activation across the entire dataset.
-  </p>
-
-  <p>
-    The resulting visualization is shown below.
-  </p>
-
-  <!-- Insert figure here -->
-
-  <figure>
-    <img src="test_cnn_site.png" alt="Visualization of inactive neurons in the SmallCNN architecture">
-    <figcaption>
-      Visualization of the SmallCNN architecture highlighting neurons that remained inactive during inference.
-    </figcaption>
-  </figure>
-
-  <p>
-    This first experiment demonstrates that the proposed method successfully links the internal activations collected through forward hooks to a graphical representation of the network architecture. Although performed on a simple model, it validates the complete visualization pipeline and confirms that inactive neurons can be automatically identified and localized within the network. This proof of concept provides the basis for applying the same methodology to more complex architectures, such as GMIC.
-  </p>
-
-</section>
-
-
     <section class="section" id="case-gmic">
       <span class="eyebrow">05 — Case study II</span>
       <h2>GMIC: a real screening model, at full scale</h2>
@@ -641,6 +613,14 @@
           <tr class="hi"><td><code>classifier_linear</code></td><td>Fusion</td><td class="num">100%</td><td class="num">low — 2 units, 16 images</td></tr>
         </tbody>
       </table>
+
+      <div style="margin: 2.5rem 0;">
+        <iframe
+          src="graph_explorer.html"
+          style="width: 100%; height: 85vh; border: 1px solid var(--border); border-radius: 8px;"
+          title="Interactive dead-neuron graph of GMIC">
+        </iframe>
+      </div>
     </section>
 
   </article>
