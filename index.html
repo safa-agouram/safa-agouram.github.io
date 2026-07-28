@@ -544,12 +544,12 @@
     <section class="section" id="introduction">
       <span class="eyebrow">01 — Contexte </span>
       <h2>AI is already reading mammograms. It rarely explains itself.</h2>
-      <p class="dropcap">Les réseaux de neurones profonds sont aujourd'hui largement utilisés pour l'analyse d'images, mais leur fonctionnement interne reste difficile à interpréter. Dans les réseaux utilisant la fonction d'activation ReLU, certains neurones peuvent devenir inactifs, phénomène connu sous le nom de dying ReLU, qui peut affecter la capacité d'apprentissage du réseau. Plusieurs travaux récents étudient ce phénomène et cherchent à limiter ou à réactiver ces neurones.</p>
+      <p class="dropcap">Today, deep neural networks are widely used for image analysis, but their inner workings remain difficult to interpret. In networks using the ReLU activation function, certain neurons can become inactive (a phenomenon known as the dying ReLU problem) which can impair the network's learning capacity. Several recent studies examine this phenomenon and aim to mitigate it or reactivate these neurons.</p>
 
 
       <span class="eyebrow">02 — Objetcif de l'étude</span>
 
-      <p> Dans ce contexte, l'observation des activations internes constitue une approche permettant de mieux comprendre le comportement des réseaux. Ce travail vise ainsi à développer un outil permettant de visualiser l'architecture d'un réseau et de localiser les couches présentant des neurones inactifs à partir de l'analyse de leurs activations. L'approche est étudiée sur une architecture CNN simple, puis sur réseau convolutif plus complexes, l'architecture de GMIC, utilisée pour l'analyse de mammographies dans le contexte de la prédiction du cancer du sein.</p>
+      <p> In this context, monitoring internal activations provides an approach to better understanding network behavior. This work thus aims to develop a tool for visualizing network architecture and pinpointing layers containing inactive neurons through activation analysis. The approach is first evaluated on a simple CNN architecture, and then on a more complex convolutional network (the GMIC architecture) used for mammography analysis in the context of breast cancer prediction.</p>
       <div class="callout">
         <span class="eyebrow" style="color:var(--accent-red)">Keys Words</span>
         <p>CCN, Dying neurones, Relu,</p>
@@ -579,10 +579,9 @@
   <div class="nv-steps" id="nv-steps"></div>
   <p class="nv-desc" id="nv-desc"></p>
  
-  <div class="nv-model-row">
-    <span class="nv-model-label">Modèle observé</span>
-    <div class="nv-model-toggle" id="nv-model-toggle"></div>
-  </div>
+<div class="nv-model-row">
+    <span class="nv-model-label">Illustrative neural network</span>
+</div>
  
   <div class="nv-canvas">
     <svg id="nv-svg" viewBox="0 0 900 300" role="img" aria-label="Diagramme du réseau de neurones"></svg>
@@ -651,28 +650,15 @@
   ];
  
   // dead:true => neurone jamais activé (illustratif)
-  const models = {
-    cnn: {
-      label:"CNN — CIFAR-10 (chat / chien)",
+  const model = {
       layers:[
-        { name:"conv1", neurons:[0,0,0,0,0,0,0,1] },
-        { name:"conv2", neurons:[0,0,1,0,0,0,1,0] },
-        { name:"conv3", neurons:[0,1,0,0,1,0] },
-        { name:"fc1",   neurons:[1,0,1,0,1,0] },
-        { name:"fc2",   neurons:[0,1,0,1] }
+          { name:"Input",    neurons:[0,0,0,0] },
+          { name:"Layer 1",  neurons:[0,0,1,0,0,0] },
+          { name:"Layer 2",  neurons:[0,1,0,0,0,1] },
+          { name:"Layer 3",  neurons:[0,0,0,1,0] },
+          { name:"Layer 4",  neurons:[0,1,0,0] },
+          { name:"Output",   neurons:[0,0] }
       ]
-    },
-    gmic: {
-      label:"GMIC — mammographie",
-      layers:[
-        { name:"backbone-1", neurons:[0,0,0,0,0,0,0,0] },
-        { name:"backbone-2", neurons:[0,0,1,0,0,0,0,0] },
-        { name:"backbone-3", neurons:[0,1,0,1,0,0,1,0] },
-        { name:"local-net",  neurons:[1,0,1,0,1,1,0,0] },
-        { name:"global-net", neurons:[0,1,1,0,1,1,1,0] },
-        { name:"fusion",     neurons:[1,0,1,0,0,0] }
-      ]
-    }
   };
  
   let currentStep = 0;
@@ -696,16 +682,6 @@
     });
   }
  
-  function buildToggle(){
-    toggleEl.innerHTML = "";
-    Object.keys(models).forEach(key=>{
-      const btn = document.createElement("button");
-      btn.className = "nv-model-btn" + (key===currentModel ? " active" : "");
-      btn.textContent = models[key].label;
-      btn.addEventListener("click", ()=>{ currentModel = key; render(); });
-      toggleEl.appendChild(btn);
-    });
-  }
  
   function layoutPositions(layers){
     const width = 900, height = 300;
@@ -731,10 +707,9 @@
  
   function render(){
     buildSteps();
-    buildToggle();
     descEl.textContent = steps[currentStep].text;
  
-    const layers = layoutPositions(models[currentModel].layers);
+    const layers = layoutPositions(model.layers);
     svg.innerHTML = "";
  
     // edges between consecutive layers (sparse sample for readability)
@@ -840,8 +815,8 @@
     legendEl.innerHTML = "";
     if(showColor){
       legendEl.innerHTML = `
-        <div class="nv-legend-item"><span class="nv-dot" style="background:var(--active)"></span>Neurone activé au moins une fois</div>
-        <div class="nv-legend-item"><span class="nv-dot" style="background:var(--dead)"></span>Neurone jamais activé</div>
+        <div class="nv-legend-item"><span class="nv-dot" style="background:var(--active)"></span>Active neuron</div>
+        <div class="nv-legend-item"><span class="nv-dot" style="background:var(--dead)"></span>Inactive neuron</div>
       `;
     } else if(showHooks){
       legendEl.innerHTML = `<div class="nv-legend-item"><span class="nv-dot" style="background:var(--hook)"></span>Hook posé sur la couche</div>`;
@@ -852,14 +827,25 @@
     // stats (step 4 only)
     statsEl.innerHTML = "";
     if(currentStep === 3){
-      const allNeurons = models[currentModel].layers.flatMap(l=>l.neurons);
+      const allNeurons = model.layers.flatMap(l=>l.neurons);
       const total = allNeurons.length;
       const dead = allNeurons.filter(d=>d===1).length;
       const pct = Math.round((dead/total)*100);
       statsEl.innerHTML = `
-        <div class="nv-stat"><span class="nv-stat-num">${total}</span><span class="nv-stat-label">Neurones observés (échantillon)</span></div>
-        <div class="nv-stat"><span class="nv-stat-num dead">${dead}</span><span class="nv-stat-label">Jamais activés</span></div>
-        <div class="nv-stat"><span class="nv-stat-num">${pct}%</span><span class="nv-stat-label">Part inactive</span></div>
+      <div class="nv-stat">
+      <span class="nv-stat-num">${total}</span>
+      <span class="nv-stat-label">Observed neurons</span>
+      </div>
+      
+      <div class="nv-stat">
+      <span class="nv-stat-num dead">${dead}</span>
+      <span class="nv-stat-label">Inactive neurons</span>
+      </div>
+      
+      <div class="nv-stat">
+      <span class="nv-stat-num">${pct}%</span>
+      <span class="nv-stat-label">Inactive ratio</span>
+      </div>
       `;
     }
   }
