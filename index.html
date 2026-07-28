@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mapping Dead Neurons — Diagnostic Tool for Breast-Cancer Screening Networks</title>
-<meta name="description" content="Une analyse visuelle et explicative des neurones morts dans les réseaux de neurones appliqués au dépistage du cancer du sein.">
+<meta name="description" content="A visual and explanatory analysis of dead neurons in neural networks applied to breast cancer screening.">
 
-<!-- Typographies Google Fonts -->
+<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -176,9 +176,9 @@
   }
 
   p {
-  margin-bottom: 1.2rem;
-  color: var(--text-primary);
-  text-align: justify;
+    margin-bottom: 1.2rem;
+    color: var(--text-primary);
+    text-align: justify;
   }
   
   .dropcap::first-letter {
@@ -263,7 +263,7 @@
     .topnav-links { display: none; }
   }
 
-  /* --- VISUALISATION DES NEURONES — ÉTAPE 3 --- */
+  /* --- NEURON VISUALIZATION — STEP 3 --- */
   .nv-wrap{
     --bg:#ffffff;
     --bg-alt:#faf9f6;
@@ -542,17 +542,16 @@
   <article id="main">
 
     <section class="section" id="introduction">
-      <span class="eyebrow">01 — Contexte </span>
+      <span class="eyebrow">01 — Context</span>
       <h2>AI is already reading mammograms. It rarely explains itself.</h2>
       <p class="dropcap">Today, deep neural networks are widely used for image analysis, but their inner workings remain difficult to interpret. In networks using the ReLU activation function, certain neurons can become inactive (a phenomenon known as the dying ReLU problem) which can impair the network's learning capacity. Several recent studies examine this phenomenon and aim to mitigate it or reactivate these neurons.</p>
 
+      <span class="eyebrow">02 — Study objective</span>
 
-      <span class="eyebrow">02 — Objetcif de l'étude</span>
-
-      <p> In this context, monitoring internal activations provides an approach to better understanding network behavior. This work thus aims to develop a tool for visualizing network architecture and pinpointing layers containing inactive neurons through activation analysis. The approach is first evaluated on a simple CNN architecture, and then on a more complex convolutional network (the GMIC architecture) used for mammography analysis in the context of breast cancer prediction.</p>
+      <p>In this context, monitoring internal activations provides an approach to better understanding network behavior. This work thus aims to develop a tool for visualizing network architecture and pinpointing layers containing inactive neurons through activation analysis. The approach is first evaluated on a simple CNN architecture, and then on a more complex convolutional network (the GMIC architecture) used for mammography analysis in the context of breast cancer prediction.</p>
       <div class="callout">
-        <span class="eyebrow" style="color:var(--accent-red)">Keys Words</span>
-        <p>CCN, Dying neurones, Relu,</p>
+        <span class="eyebrow" style="color:var(--accent-red)">Keywords</span>
+        <p>CNN, Dying neurons, ReLU</p>
       </div>
     </section>
 
@@ -564,33 +563,32 @@
 
     <section class="section" id="method">
       <span class="eyebrow">03 — A generalist mapping tool</span>
-      <h2>From activation to visualisation</h2>
+      <h2>From activation to visualization</h2>
       <p>
-        Pour analyser le comportement interne d'un réseau, les données sont propagées à travers le modèle.
-        Des hooks permettent ensuite de récupérer les activations internes des couches étudiées.
-        Ces activations sont analysées afin d'identifier les neurones qui ne produisent aucune activation positive
-        sur les exemples observés, puis cette information est reliée à une représentation visuelle de l'architecture.
+        To analyze the internal behavior of a network, data is propagated through the model.
+        Hooks then retrieve the internal activations of the layers under study.
+        These activations are analyzed to identify neurons that produce no positive activation
+        across the observed examples, and this information is then linked to a visual representation of the architecture.
       </p>
 
 <div class="nv-wrap">
-  <p class="nv-eyebrow">Étape 3 — De l'activation à la visualisation</p>
-  <h2 class="nv-title">Construction de la fonction Visualisation()</h2>
+  <p class="nv-eyebrow">Step 3 — From activation to visualization</p>
+  <h2 class="nv-title">Building the Visualization() function</h2>
  
   <div class="nv-steps" id="nv-steps"></div>
   <p class="nv-desc" id="nv-desc"></p>
  
-<div class="nv-model-row">
+  <div class="nv-model-row">
     <span class="nv-model-label">Illustrative neural network</span>
-</div>
+  </div>
  
   <div class="nv-canvas">
-    <svg id="nv-svg" viewBox="0 0 900 300" role="img" aria-label="Diagramme du réseau de neurones"></svg>
+    <svg id="nv-svg" viewBox="0 0 900 300" role="img" aria-label="Neural network diagram"></svg>
     <div class="nv-legend" id="nv-legend"></div>
   </div>
  
   <div class="nv-stats" id="nv-stats"></div>
 </div>
- 
 
     </section>
 
@@ -639,20 +637,20 @@
   const svgNS = "http://www.w3.org/2000/svg";
  
   const steps = [
-    { title:"Faire passer les données dans le modèle",
-      text:"Pour analyser le comportement interne d'un réseau, des données sont d'abord propagées à travers le modèle. À chaque couche étudiée, il est alors possible d'observer les valeurs produites par le réseau." },
-    { title:"Observer les couches avec des hooks",
-      text:"Les forward hooks de PyTorch permettent de récupérer automatiquement la sortie d'une couche lors du passage des données. Ils offrent ainsi un accès aux activations internes sans modifier l'architecture du modèle." },
-    { title:"Analyser les activations",
-      text:"Les activations récupérées sont ensuite analysées sur l'ensemble des données étudiées. Pour chaque couche, il est possible d'identifier les neurones qui ne produisent aucune activation positive sur les exemples observés." },
-    { title:"Relier l'analyse à l'architecture",
-      text:"L'information obtenue à partir des activations est ensuite associée à la représentation graphique de l'architecture. Les couches présentant des neurones inactifs peuvent ainsi être identifiées directement dans le réseau." }
+    { title:"Pass data through the model",
+      text:"To analyze a network's internal behavior, data is first propagated through the model. At each layer under study, we can observe the activation values produced by the network." },
+    { title:"Monitor layers with hooks",
+      text:"PyTorch forward hooks automatically capture layer outputs during data propagation. They provide access to internal activations without altering the model architecture." },
+    { title:"Analyze activations",
+      text:"The captured activations are analyzed across the dataset. For each layer, neurons that produce no positive activation across all observed examples can be identified." },
+    { title:"Map analysis to architecture",
+      text:"The activation insights are mapped directly onto the graphical representation of the architecture. Layers containing inactive neurons can thus be identified visually within the network." }
   ];
  
-  // dead:true => neurone jamais activé (illustratif)
+  // dead:true => neuron never activated (illustrative)
   const model = {
       layers:[
-          { name:"Input",    neurons:[0,0,0,0] },
+          { name:"Input",   neurons:[0,0,0,0] },
           { name:"Layer 1",  neurons:[0,0,1,0,0,0] },
           { name:"Layer 2",  neurons:[0,1,0,0,0,1] },
           { name:"Layer 3",  neurons:[0,0,0,1,0] },
@@ -681,7 +679,6 @@
       stepsEl.appendChild(btn);
     });
   }
- 
  
   function layoutPositions(layers){
     const width = 900, height = 300;
@@ -819,9 +816,9 @@
         <div class="nv-legend-item"><span class="nv-dot" style="background:var(--dead)"></span>Inactive neuron</div>
       `;
     } else if(showHooks){
-      legendEl.innerHTML = `<div class="nv-legend-item"><span class="nv-dot" style="background:var(--hook)"></span>Hook posé sur la couche</div>`;
+      legendEl.innerHTML = `<div class="nv-legend-item"><span class="nv-dot" style="background:var(--hook)"></span>Hook attached to layer</div>`;
     } else {
-      legendEl.innerHTML = `<div class="nv-legend-item">Propagation des exemples à travers le réseau</div>`;
+      legendEl.innerHTML = `<div class="nv-legend-item">Propagating examples through the network</div>`;
     }
  
     // stats (step 4 only)
