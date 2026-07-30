@@ -566,26 +566,6 @@ What all of these approaches presuppose is that one already knows where in the n
         across the observed examples, and this information is then linked to a visual representation of the architecture.
       </p>
 
-
-      <section class="section" id="case-smallcnn">
-        <span class="eyebrow">03 — Case study</span>
-        <h2>Case study — SmallCNN</h2>
-      
-        <p>
-          To validate our visualization tool on a simple architecture, we first applied it
-          to a small convolutional neural network trained on the CIFAR-10 dataset.
-          The visualization below highlights the distribution of active and inactive
-          neurons across the network after inference on the dataset.
-        </p>
-      
-        <div style="margin: 2rem 0; text-align: center;">
-          <img
-            src="test_cnn_site.png"
-            alt="Dead neuron visualization for the SmallCNN trained on CIFAR-10"
-            style="max-width: 100%; border: 1px solid var(--border); border-radius: 8px;">
-        </div>
-      </section>
-
 <div class="nv-wrap">
   <h2 class="nv-title">Building the Visualization() function</h2>
  
@@ -606,8 +586,26 @@ What all of these approaches presuppose is that one already knows where in the n
 
     </section>
 
+          <section class="section" id="case-smallcnn">
+        <span class="eyebrow">03 — Case study : SmallCNN</span>
+      
+        <p>
+          To validate our visualization tool on a simple architecture, we first applied it
+          to a small convolutional neural network trained on the CIFAR-10 dataset.
+          The visualization below highlights the distribution of active and inactive
+          neurons across the network after inference on the dataset.
+        </p>
+      
+        <div style="margin: 2rem 0; text-align: center;">
+          <img
+            src="test_cnn_site.png"
+            alt="Dead neuron visualization for the SmallCNN trained on CIFAR-10"
+            style="max-width: 100%; border: 1px solid var(--border); border-radius: 8px;">
+        </div>
+      </section>
+
     <section class="section" id="case-gmic">
-      <span class="eyebrow">05 — Case study II</span>
+      <span class="eyebrow">05 — Case study : GMIC model</span>
       <h2>GMIC: a real screening model, at full scale</h2>
 
       <div style="margin: 2.5rem 0;">
