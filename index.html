@@ -590,24 +590,6 @@ What all of these approaches presuppose is that one already knows where in the n
     <section class="section" id="case-gmic">
       <span class="eyebrow">05 — Case study II</span>
       <h2>GMIC: a real screening model, at full scale</h2>
-      
-      <div class="stat-row">
-        <div class="stat"><div class="v">52</div><div class="l">Layers</div></div>
-        <div class="stat"><div class="v red">38.4%</div><div class="l">Avg Dead Rate</div></div>
-        <div class="stat"><div class="v">70.4%</div><div class="l">Worst Layer</div></div>
-      </div>
-
-      <table class="data-table">
-        <thead>
-          <tr><th>Layer</th><th>Module</th><th class="num">Dead</th><th class="num">Reliability</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><code>dn_resnet.layer4.1.conv1</code></td><td>Local</td><td class="num">70.4%</td><td class="num">high — 24,571 units</td></tr>
-          <tr><td><code>dn_resnet.layer1.0.conv1</code></td><td>Local</td><td class="num">63.1%</td><td class="num">high — 172,040 units</td></tr>
-          <tr><td><code>ds_net.first_conv</code></td><td>Global</td><td class="num">33.8%</td><td class="num">high — 4,132,780 units</td></tr>
-          <tr class="hi"><td><code>classifier_linear</code></td><td>Fusion</td><td class="num">100%</td><td class="num">low — 2 units, 16 images</td></tr>
-        </tbody>
-      </table>
 
       <div style="margin: 2.5rem 0;">
         <iframe
