@@ -541,7 +541,7 @@
 
 When the sample size cannot be increased, the alternative is to reduce the number of parameters to what the task actually requires — parsimony instead of more data. Identifying the parts of a CNN that play no role in the task, in the sense that their ReLU output never leaves zero, is one concrete route: those branches carry weights that are trained but never used, and could in principle be removed. This is the dying ReLU problem, and it costs more than wasted capacity — a unit whose pre-activation is negative for every input receives no gradient, so it cannot recover on its own, and the network's effective learning capacity shrinks accordingly. Several recent studies analyse the phenomenon and propose ways to mitigate it or to bring the affected units back to life.</p>
     
-  <h2>Related work</h2>
+  <span class="eyebrow">Related work</span>
     <p>
       Work on the dying ReLU falls into three broad families, following the taxonomy proposed by Lu et al. (2020). The first modifies the architecture, and in particular the activation function: leaky ReLU (Maas et al., 2013), ELU (Clevert et al., 2016), SELU (Klambauer et al., 2017) and searched activations (Ramachandran et al., 2017) all preserve some gradient signal on the negative side, although their relative benefit varies across tasks and datasets and each adds at least one hyper-parameter to tune. The second inserts extra operations into the training loop — batch normalisation (Ioffe and Szegedy, 2015), dropout (Srivastava et al., 2014) — at the cost of additional computation per iteration. The third leaves both the architecture and the training procedure untouched and changes only how weights and biases are initialised (Glorot and Bengio, 2010; Saxe et al., 2014; He et al., 2015; Mishkin and Matas, 2016).
 
@@ -558,8 +558,8 @@ What all of these approaches presuppose is that one already knows where in the n
     
 
     <section class="section" id="method">
-      <h2><span class="eyebrow">02 — A generalist mapping tool</span></h2>
-      <h2>From activation to visualization</h2>
+      <h2>02 — A generalist mapping tool</h2>
+      <span class="eyebrow">From activation to visualization</span>
       <p>
         To analyze the internal behavior of a network, data is propagated through the model.
         Hooks then retrieve the internal activations of the layers under study.
@@ -588,7 +588,7 @@ What all of these approaches presuppose is that one already knows where in the n
     </section>
 
           <section class="section" id="case-smallcnn">
-        <span class="eyebrow">03 — Case study : SmallCNN</span>
+        <h2>03 — Case study : SmallCNN</h2>
       
         <p>
           To validate our visualization tool on a simple architecture, we first applied it
@@ -606,7 +606,7 @@ What all of these approaches presuppose is that one already knows where in the n
       </section>
 
     <section class="section" id="case-gmic">
-      <span class="eyebrow">05 — Case study : GMIC model</span>
+      <h2>05 — Case study : GMIC model</h2>
       <h2>GMIC: a real screening model, at full scale</h2>
 
       <div style="margin: 2.5rem 0;">
