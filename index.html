@@ -532,9 +532,10 @@
   <article id="main">
 
   <section class="section" id="introduction">
-  
-  <span class="eyebrow"> 01 — Why examining dead ReLu? </span>
-    <h2>Context</h2>
+
+
+  <h2> 01 — Why examining dead ReLu? </h2>
+  <span class="eyebrow">Context</span>
     <p>
   Convolutional neural networks are heavily over-parameterised: the number of trainable weights routinely exceeds the number of training samples, which gives them a strong tendency to memorise rather than generalise on supervised tasks such as classification. The usual remedy is data. For the empirical risk minimiser (ERM) to generalise — that is, for its true risk under the underlying distribution P to stay close to the empirical risk it was trained to minimise — one draws a training set from P large enough for the two to coincide. In medical imaging that remedy is often unavailable: ground-truth labels require expert annotation and, for endpoints such as biopsy-confirmed malignancy, are both expensive and technically difficult to obtain.
 
@@ -549,7 +550,7 @@ Lu et al. (2020) give the first theoretical treatment of the problem in this thi
 What all of these approaches presuppose is that one already knows where in the network the problem is. To the best of our knowledge, no simple tool exists for visualising which parts of an architecture never activate across a full forward pass over an empirical dataset — for seeing where the dying ReLU actually occurs in a specific network, and how much of it is affected. That is our contribution.
     </p> 
 
-    <h2>Our contributions</h2>
+    <span class="eyebrow">Our contributions</span>
     <p>
       <li>Given a PyTorch model and a PyTorch DataLoader, a user-friendly tool that maps and visualises dead ReLU units across every sample in the loader.</li>
       <li>Two case studies in supervised learning: object classification on CIFAR-10 (Krizhevsky, 2009) with a small CNN, and detection of malignant patterns in mammograms with GMIC (Shen et al., 2021), a recent multiple-instance-learning CNN architecture.</li>
@@ -557,7 +558,7 @@ What all of these approaches presuppose is that one already knows where in the n
     
 
     <section class="section" id="method">
-      <span class="eyebrow">02 — A generalist mapping tool</span>
+      <h2><span class="eyebrow">02 — A generalist mapping tool</span></h2>
       <h2>From activation to visualization</h2>
       <p>
         To analyze the internal behavior of a network, data is propagated through the model.
