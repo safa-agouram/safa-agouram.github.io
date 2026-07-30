@@ -557,7 +557,7 @@ What all of these approaches presuppose is that one already knows where in the n
     
 
     <section class="section" id="method">
-      <span class="eyebrow">03 — A generalist mapping tool</span>
+      <span class="eyebrow">02 — A generalist mapping tool</span>
       <h2>From activation to visualization</h2>
       <p>
         To analyze the internal behavior of a network, data is propagated through the model.
@@ -565,6 +565,26 @@ What all of these approaches presuppose is that one already knows where in the n
         These activations are analyzed to identify neurons that produce no positive activation
         across the observed examples, and this information is then linked to a visual representation of the architecture.
       </p>
+
+
+      <section class="section" id="case-smallcnn">
+        <span class="eyebrow">03 — Case study</span>
+        <h2>Case study — SmallCNN</h2>
+      
+        <p>
+          To validate our visualization tool on a simple architecture, we first applied it
+          to a small convolutional neural network trained on the CIFAR-10 dataset.
+          The visualization below highlights the distribution of active and inactive
+          neurons across the network after inference on the dataset.
+        </p>
+      
+        <div style="margin: 2rem 0; text-align: center;">
+          <img
+            src="test_cnn_site.png"
+            alt="Dead neuron visualization for the SmallCNN trained on CIFAR-10"
+            style="max-width: 100%; border: 1px solid var(--border); border-radius: 8px;">
+        </div>
+      </section>
 
 <div class="nv-wrap">
   <p class="nv-eyebrow">Step 3 — From activation to visualization</p>
