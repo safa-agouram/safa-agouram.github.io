@@ -590,51 +590,24 @@ What all of these approaches presuppose is that one already knows where in the n
     </section>
 
 
-
+<span class="eyebrow">Dead neuron criterion</span>
     <div class="callout">
-  <span class="eyebrow" style="color:var(--accent-red)">
-    Dead neuron criterion
-  </span>
-
   <p>
-    Let \(a_i^{(k)}(x)\) denote the post-ReLU activation of neuron \(i\) in layer
-    \(k\) for an input image \(x\). A neuron is considered <em>dead</em> if its
-    activation remains equal to zero for every image in the dataset:
+    Let <i>a</i><sub>i</sub><sup>(k)</sup>(x) denote the post-ReLU activation of
+    neuron <i>i</i> in layer <i>k</i> for an input image <i>x</i>.
+    A neuron is considered <strong>dead</strong> if its activation is equal to
+    zero for every image in the dataset:
   </p>
 
-  <div style="text-align:center; margin:1.5rem 0; font-size:1.2rem;">
-    \[
-    \text{Dead}(i,k)=
-    \begin{cases}
-    1 & \forall x\in\mathcal D,\; a_i^{(k)}(x)=0,\\
-    0 & \text{otherwise.}
-    \end{cases}
-    \]
+  <div style="text-align:center; margin:1.5rem 0; font-size:1.15rem; font-family: var(--font-mono);">
+    Dead(i,k) = 1 &nbsp; if &nbsp; a<sub>i</sub><sup>(k)</sup>(x) = 0
+    &nbsp; ∀ x ∈ D
   </div>
 
-  <p>
-    Equivalently, the neuron is dead if the sum of the zero-activation indicators
-    over the entire dataset equals the number of samples.
+  <p style="text-align:center;">
+    Otherwise, Dead(i,k) = 0.
   </p>
 </div>
-
-          <section class="section" id="case-smallcnn">
-        <h2>03 — Case study : SmallCNN</h2>
-      
-        <p>
-          To validate our visualization tool on a simple architecture, we first applied it
-          to a small convolutional neural network trained on the CIFAR-10 dataset.
-          The visualization below highlights the distribution of active and inactive
-          neurons across the network after inference on the dataset.
-        </p>
-      
-        <div style="margin: 2rem 0; text-align: center;">
-          <img
-            src="test_cnn_site.png"
-            alt="Dead neuron visualization for the SmallCNN trained on CIFAR-10"
-            style="max-width: 100%; border: 1px solid var(--border); border-radius: 8px;">
-        </div>
-      </section>
 
     <section class="section" id="case-gmic">
       <h2>05 — Case study : GMIC model</h2>
