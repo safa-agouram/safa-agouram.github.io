@@ -508,6 +508,7 @@
       <li><a href="#case-smallcnn">SmallCNN</a></li>
       <li><a href="#case-gmic">GMIC</a></li>
       <li><a href="#discussion">Discussion</a></li>
+      <li><a href="#references">References</a></li>
     </ul>
   </div>
 </nav>
@@ -526,6 +527,7 @@
       <li><a href="#case-gmic">04 · Case study — GMIC</a></li>
       <li><a href="#discussion">05 · Discussion</a></li>
       <li><a href="#conclusion">06 · Conclusion &amp; outlook</a></li>
+      <li><a href="#references">06 · References</a></li>
     </ol>
   </nav>
 
@@ -607,7 +609,7 @@ What all of these approaches presuppose is that one already knows where in the n
 
     <section class="section" id="case-gmic">
       <h2>05 — Case study : GMIC model</h2>
-      <h2>GMIC: a real screening model, at full scale</h2>
+      <p>We apply the tool to GMIC, a multiple-instance-learning CNN for high-resolution breast-cancer screening images (Shen et al., 2021), using the model and weights released in the authors' repository, nyukat/GMIC.</p>
 
       <div style="margin: 2.5rem 0;">
         <iframe
@@ -618,6 +620,30 @@ What all of these approaches presuppose is that one already knows where in the n
       </div>
     </section>
 
+
+    <section class="section" id="references">
+      <span class="eyebrow">06 — References</span>
+      <h2>References</h2>
+      <p style="font-size:0.9rem; line-height:1.9;">
+        Cai, Z., Huang, K. and Peng, C. (2021). Reborn mechanism: rethinking the negative phase information flow in convolutional neural network. arXiv:2106.07026.<br><br>
+        Clevert, D.-A., Unterthiner, T. and Hochreiter, S. (2016). Fast and accurate deep network learning by exponential linear units (ELUs). <em>International Conference on Learning Representations (ICLR)</em>. arXiv:1511.07289.<br><br>
+        Glorot, X. and Bengio, Y. (2010). Understanding the difficulty of training deep feedforward neural networks. <em>Proceedings of the 13th International Conference on Artificial Intelligence and Statistics (AISTATS)</em>, 249–256.<br><br>
+        He, K., Zhang, X., Ren, S. and Sun, J. (2015). Delving deep into rectifiers: surpassing human-level performance on ImageNet classification. <em>IEEE International Conference on Computer Vision (ICCV)</em>, 1026–1034.<br><br>
+        Horuz, C. C., Kasenbacher, G., Higuchi, S., Kairat, S., Stoltz, J., Pesl, M., Moser, B. A., Linse, C., Martinetz, T. and Otte, S. (2025). The resurrection of the ReLU. arXiv:2505.22074.<br><br>
+        Ioffe, S. and Szegedy, C. (2015). Batch normalization: accelerating deep network training by reducing internal covariate shift. <em>International Conference on Machine Learning (ICML)</em>.<br><br>
+        Klambauer, G., Unterthiner, T., Mayr, A. and Hochreiter, S. (2017). Self-normalizing neural networks. <em>Advances in Neural Information Processing Systems 30 (NeurIPS)</em>.<br><br>
+        Krizhevsky, A. (2009). Learning multiple layers of features from tiny images. Technical report, University of Toronto.<br><br>
+        Lu, L., Shin, Y., Su, Y. and Karniadakis, G. E. (2020). Dying ReLU and initialization: theory and numerical examples. <em>Communications in Computational Physics</em>, 28(5), 1671–1706. doi:10.4208/cicp.OA-2020-0165. arXiv:1903.06733.<br><br>
+        Maas, A. L., Hannun, A. Y. and Ng, A. Y. (2013). Rectifier nonlinearities improve neural network acoustic models. <em>ICML Workshop on Deep Learning for Audio, Speech and Language Processing</em>.<br><br>
+        Mishkin, D. and Matas, J. (2016). All you need is a good init. <em>International Conference on Learning Representations (ICLR)</em>.<br><br>
+        Ramachandran, P., Zoph, B. and Le, Q. V. (2017). Searching for activation functions. arXiv:1710.05941.<br><br>
+        Saxe, A. M., McClelland, J. L. and Ganguli, S. (2014). Exact solutions to the nonlinear dynamics of learning in deep linear neural networks. <em>International Conference on Learning Representations (ICLR)</em>.<br><br>
+        Shen, Y., Wu, N., Phang, J., Park, J., Liu, K., Tyagi, S., Heacock, L., Kim, S. G., Moy, L., Cho, K. and Geras, K. J. (2021). An interpretable classifier for high-resolution breast cancer screening images utilizing weakly supervised localization. <em>Medical Image Analysis</em>, 68, 101908. doi:10.1016/j.media.2020.101908.<br><br>
+        Shin, Y. and Karniadakis, G. E. (2020). Trainability of ReLU networks and data-dependent initialization. <em>Journal of Machine Learning for Modeling and Computing</em>, 1(1), 39–74. arXiv:1907.09696.<br><br>
+        Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I. and Salakhutdinov, R. (2014). Dropout: a simple way to prevent neural networks from overfitting. <em>Journal of Machine Learning Research</em>, 15(1), 1929–1958.
+      </p>
+    </section>
+
   </article>
 </div>
 
@@ -625,11 +651,7 @@ What all of these approaches presuppose is that one already knows where in the n
   <div class="footer-grid">
     <div>
       <h4>Model &amp; code under study</h4>
-      <p><a href="https://github.com/nyukat/GMIC" target="_blank" rel="noopener">nyukat/GMIC</a> — Shen et al., "Globally-Aware Multiple Instance Classifier for Breast Cancer Screening."</p>
-    </div>
-    <div>
-      <h4>Authors</h4>
-      <p>Emilien Jemelen · Safa Agouram · Julia Gambaraza</p>
+      <p>GMIC — Shen et al. (2021), <em>Medical Image Analysis</em>. See <a href="#references">References</a>.</p>
     </div>
   </div>
 </footer>
