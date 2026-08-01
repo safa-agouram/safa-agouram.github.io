@@ -582,7 +582,7 @@ What all of these approaches presuppose is that one already knows where in the n
     Let <i>a</i><sub>i</sub><sup>(k)</sup>(x) denote the post-ReLU activation of
     neuron <i>i</i> in layer <i>k</i> for an input image <i>x</i>.
     A neuron is considered <strong>dead</strong> if its activation is equal to
-    zero for every image in the dataset:
+    zero for every image in the dataset <i>D</i>:
   </p>
 
   <div style="text-align:center; margin:1.5rem 0; font-size:1.15rem; font-family: var(--font-mono);">
@@ -597,7 +597,7 @@ What all of these approaches presuppose is that one already knows where in the n
 
     <section class="section" id="case-gmic">
       <h2>05 — Case study : GMIC model</h2>
-      <p>We apply the tool to GMIC, a multiple-instance-learning CNN for high-resolution breast-cancer screening images (Shen et al., 2021), using the model and weights released in the authors' repository, nyukat/GMIC.</p>
+      <p>We apply the tool to GMIC, a multiple-instance-learning CNN for high-resolution breast-cancer screening images (Shen et al., 2021), using the model and weights released in the authors' repository, <a href="https://github.com/nyukat/GMIC" target="_blank" rel="noopener">nyukat/GMIC</a>.</p>
 
       <div style="margin: 2.5rem 0;">
         <iframe
@@ -609,6 +609,46 @@ What all of these approaches presuppose is that one already knows where in the n
     </section>
 
     <section class="section" id="conclusion">
+
+    <span class="eyebrow">Interpreting the results</span>
+
+      <p>
+        If the same regions consistently appear inactive across several independent
+        training runs and data splits, the finding is likely to reflect a structural
+        property of the model rather than the outcome of a particular initialization.
+        In such cases, the visualization can guide subsequent interventions proposed
+        in the literature, including alternative activation functions, improved
+        initialization strategies, or methods that preserve gradient flow through
+        inactive neurons. Conversely, if inactive regions vary substantially between
+        runs, they are more likely to result from initialization effects, making
+        retraining or reinitialization preferable to architectural redesign.
+      </p>
+    
+      <p>
+        On <strong>SmallCNN</strong>, dead units were observed exclusively in the
+        fully connected layer <code>fc1</code> (between 6 and 16 neurons out of 64,
+        depending on the training run), while the convolutional layers
+        <code>conv1</code> and <code>conv2</code> exhibited no dead units. This
+        distribution agrees with previous observations that convolutional feature
+        extractors are less prone to permanently inactive neurons because they process
+        diverse spatial patterns, whereas fully connected layers operate on compressed
+        feature representations where redundancy is lower.
+      </p>
+    
+      <p>
+        On <strong>GMIC</strong>, inactive neurons were detected across several
+        branches of the architecture, with higher concentrations in deeper layers.
+        This observation is also consistent with previous studies showing that the
+        dying ReLU phenomenon tends to become more pronounced as network depth
+        increases. Overall, the moderate dead-unit rates observed in SmallCNN and the
+        more widespread inactivity found in GMIC support the idea that architectural
+        depth and complexity amplify the phenomenon. These findings further motivate
+        the use of the proposed visualization tool as a diagnostic aid for deep neural
+        networks, where identifying inactive regions can provide valuable insight into
+        model behaviour before considering pruning or architectural modifications.
+      </p>
+
+      
   <h2>05 — Conclusion</h2>
   <span class="eyebrow">Concluding remarks</span>
 
@@ -636,48 +676,7 @@ What all of these approaches presuppose is that one already knows where in the n
     </ul>
   </div>
 
-  <p>
-    We leave both directions to future work built upon the visualization tool
-    presented in this study.
-  </p>
 
-  <h3>Interpreting the results</h3>
-
-  <p>
-    If the same regions consistently appear inactive across several independent
-    training runs and data splits, the finding is likely to reflect a structural
-    property of the model rather than the outcome of a particular initialization.
-    In such cases, the visualization can guide subsequent interventions proposed
-    in the literature, including alternative activation functions, improved
-    initialization strategies, or methods that preserve gradient flow through
-    inactive neurons. Conversely, if inactive regions vary substantially between
-    runs, they are more likely to result from initialization effects, making
-    retraining or reinitialization preferable to architectural redesign.
-  </p>
-
-  <p>
-    On <strong>SmallCNN</strong>, dead units were observed exclusively in the
-    fully connected layer <code>fc1</code> (between 6 and 16 neurons out of 64,
-    depending on the training run), while the convolutional layers
-    <code>conv1</code> and <code>conv2</code> exhibited no dead units. This
-    distribution agrees with previous observations that convolutional feature
-    extractors are less prone to permanently inactive neurons because they process
-    diverse spatial patterns, whereas fully connected layers operate on compressed
-    feature representations where redundancy is lower.
-  </p>
-
-  <p>
-    On <strong>GMIC</strong>, inactive neurons were detected across several
-    branches of the architecture, with higher concentrations in deeper layers.
-    This observation is also consistent with previous studies showing that the
-    dying ReLU phenomenon tends to become more pronounced as network depth
-    increases. Overall, the moderate dead-unit rates observed in SmallCNN and the
-    more widespread inactivity found in GMIC support the idea that architectural
-    depth and complexity amplify the phenomenon. These findings further motivate
-    the use of the proposed visualization tool as a diagnostic aid for deep neural
-    networks, where identifying inactive regions can provide valuable insight into
-    model behaviour before considering pruning or architectural modifications.
-  </p>
 </section>
 
 
@@ -705,19 +704,6 @@ What all of these approaches presuppose is that one already knows where in the n
 
   </article>
 </div>
-
-<footer>
-  <div class="footer-grid">
-    <div>
-      <h4>Code</h4>
-      <p><a href="https://github.com/nyukat/GMIC" target="_blank" rel="noopener">nyukat/GMIC</a> — original implementation and pretrained weights.</p>
-    </div>
-    <div>
-      <h4>Citation</h4>
-      <p>GMIC — Shen et al. (2021), <em>Medical Image Analysis</em>. Full reference in <a href="#references">References</a>.</p>
-    </div>
-  </div>
-</footer>
 
 <script>
 
