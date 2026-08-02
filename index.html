@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mapping Dead Neurons — Diagnostic Tool for Breast-Cancer Screening Networks</title>
 <meta name="description" content="A visual and explanatory analysis of dead neurons in neural networks applied to breast cancer screening.">
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 <!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -576,22 +577,31 @@ What all of these approaches presuppose is that one already knows where in the n
     </section>
 
 
-<span class="eyebrow">Dead neuron criterion</span>
-    <div class="callout">
+<div class="callout">
+  <span class="eyebrow" style="color:var(--accent-red)">
+    Dead neuron criterion
+  </span>
+
   <p>
-    Let <i>a</i><sub>i</sub><sup>(k)</sup>(x) denote the post-ReLU activation of
-    neuron <i>i</i> in layer <i>k</i> for an input image <i>x</i>.
-    A neuron is considered <strong>dead</strong> if its activation is equal to
-    zero for every image in the dataset <i>D</i>:
+    Let \(a_i^{(k)}(x)\) denote the post-ReLU activation of neuron \(i\) in layer
+    \(k\) for an input image \(x \in \mathcal{D}\). A neuron is considered
+    <em>dead</em> if its activation remains non-positive for every image in the
+    dataset. We define the dead-neuron indicator as:
   </p>
 
-  <div style="text-align:center; margin:1.5rem 0; font-size:1.15rem; font-family: var(--font-mono);">
-    Dead(i,k) = 1 &nbsp; if &nbsp; a<sub>i</sub><sup>(k)</sup>(x) = 0
-    &nbsp; ∀ x ∈ D
-  </div>
+  <p style="text-align:center; font-size:1.2rem; margin:1.5rem 0;">
+    \[
+    d_i^{(k)}
+    =
+    \mathbf{1}\!\left(
+    \forall x \in \mathcal{D},
+    \; a_i^{(k)}(x)\le 0
+    \right)
+    \]
+  </p>
 
-  <p style="text-align:center;">
-    Otherwise, Dead(i,k) = 0.
+  <p>
+    where \(\mathbf{1}(\cdot)\) denotes the indicator function.
   </p>
 </div>
 
