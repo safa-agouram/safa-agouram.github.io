@@ -606,23 +606,27 @@ What all of these approaches presuppose is that one already knows where in the n
 </div>
 
 <section class="section" id="case-smallcnn">
-  <h2>03 — Case study I</h2>
-  <h2>SmallCNN architecture</h2>
+  <h2>03 — Case study : SmallCNN architectur</h2>
 
   <p>
     As an initial validation of the proposed visualization pipeline, we applied our method to a lightweight convolutional neural network (SmallCNN). The architecture consists of two convolutional layers, each followed by a ReLU activation function and a max-pooling operation, and two fully connected layers with a ReLU activation after the first fully connected layer. The network was trained on a binary classification task derived from the CIFAR-10 dataset (cat vs. dog) for 10 epochs using a learning rate of <code>1 × 10<sup>−4</sup></code>. The best-performing checkpoint, achieving a test accuracy close to 70%, was selected for all subsequent visualization experiments. The resulting architecture is illustrated below.
   </p>
 
   <figure>
-    <img src="visualisation_cnn.png"
-         alt="SmallCNN architecture"
-         style="width:100%; max-width:600px; display:block; margin:1.5rem auto;"
+  <img src="images/visualisation_cnn.png"
+       alt="SmallCNN architecture"
+       style="width:100%;
+              max-width:300px;
+              display:block;
+              margin:1.5rem auto;
+              border:1px solid #ddd;
+              border-radius:8px;">
 
-```
+
 <figcaption>
   Figure 1. Architecture of the SmallCNN model used for the initial validation.
 </figcaption>
-```
+
 
   </figure>
 
