@@ -110,10 +110,7 @@
   g.node.dead-node { cursor: pointer; }
   g.node.dead-node:hover polygon { stroke: #0f62fe; stroke-width: 2.5; }
 
-  g.cluster[data-istop="true"] { cursor: pointer; }
-  g.cluster[data-istop="true"].collapsed polygon { fill: #fdf2f2; }
-  g.cluster[data-istop="true"]:hover polygon { stroke: #d9383a; stroke-width: 2.5; }
-  .cluster-summary text { pointer-events: none; }
+
 
   @media (max-width: 560px) {
     .app { grid-template-columns: 1fr; grid-template-rows: 45vh 55vh; }
@@ -12539,7 +12536,7 @@
   <button id="zoom-reset" title="Reset view">⤢</button>
 </div>
 
-<div class="hint">Click a dashed box to expand it. Cmd/Ctrl + scroll to zoom, drag to pan.</div>
+<div class="hint">Click anywhere to zoom in, click again to zoom back out. Cmd/Ctrl + scroll also zooms.</div>
 <div class="now-viewing" id="now-viewing"></div>
 
 <script>
@@ -12562,21 +12559,53 @@
     inner.style.height = (svgH * zoom) + 'px';
     document.getElementById('zoom-readout').textContent = Math.round(zoom * 100) + '%';
   }
+  applyZoom();
+
+  // Smooth zoom: animate `zoom` + scroll position together on every frame,
+  // so the transform, the (layout) box size, and the scroll position never
+  // fall out of sync with each other.
+  let animId = null;
+  function easeOutQuint(t) { return 1 - Math.pow(1 - t, 5); }
+
+  function animateZoom(targetZoom, targetScrollLeft, targetScrollTop, duration = 450) {
+    if (animId) cancelAnimationFrame(animId);
+    targetZoom = Math.max(minZoom, Math.min(maxZoom, targetZoom));
+    const startZoom = zoom;
+    const startLeft = viewer.scrollLeft;
+    const startTop = viewer.scrollTop;
+    const t0 = performance.now();
+
+    function step(now) {
+      const t = Math.min(1, (now - t0) / duration);
+      const e = easeOutQuint(t);
+      zoom = startZoom + (targetZoom - startZoom) * e;
+      applyZoom();
+      viewer.scrollLeft = startLeft + (targetScrollLeft - startLeft) * e;
+      viewer.scrollTop = startTop + (targetScrollTop - startTop) * e;
+      if (t < 1) {
+        animId = requestAnimationFrame(step);
+      } else {
+        animId = null;
+        zoom = targetZoom;
+        applyZoom();
+        viewer.scrollLeft = targetScrollLeft;
+        viewer.scrollTop = targetScrollTop;
+      }
+    }
+    animId = requestAnimationFrame(step);
+  }
+
   function setZoomKeepCenter(newZoom) {
+    newZoom = Math.max(minZoom, Math.min(maxZoom, newZoom));
     const cx = viewer.scrollLeft + viewer.clientWidth / 2;
     const cy = viewer.scrollTop + viewer.clientHeight / 2;
     const ratio = newZoom / zoom;
-    zoom = Math.max(minZoom, Math.min(maxZoom, newZoom));
-    applyZoom();
-    viewer.scrollLeft = cx * ratio - viewer.clientWidth / 2;
-    viewer.scrollTop = cy * ratio - viewer.clientHeight / 2;
+    animateZoom(newZoom, cx * ratio - viewer.clientWidth / 2, cy * ratio - viewer.clientHeight / 2);
   }
   document.getElementById('zoom-in').onclick = () => setZoomKeepCenter(zoom * 1.3);
   document.getElementById('zoom-out').onclick = () => setZoomKeepCenter(zoom / 1.3);
   document.getElementById('zoom-reset').onclick = () => {
-    zoom = 0.12; applyZoom();
-    viewer.scrollLeft = (svgW * zoom - viewer.clientWidth) / 2;
-    viewer.scrollTop = 0;
+    animateZoom(0.12, (svgW * 0.12 - viewer.clientWidth) / 2, 0);
   };
   viewer.addEventListener('wheel', (e) => {
     if (e.ctrlKey || e.metaKey) {
@@ -12585,64 +12614,39 @@
       setZoomKeepCenter(zoom * factor);
     }
   }, { passive: false });
-  applyZoom();
 
-  const expanded = {};
-  topIds.forEach(id => expanded[id] = false);
+  // Click anywhere on the graph background to jump straight to a close-up zoom,
+  // centered on the point clicked. Click again (or right-click) to zoom back out.
+  const CLOSE_UP_ZOOM = 0.9;
+  const OVERVIEW_ZOOM = 0.12;
 
-  function summaryText(id) {
-    const info = topInfo[id];
-    return [
-      info.label,
-      `${info.n_layers} layers · ${info.n_dead_layers} with dead neurons`,
-      `up to ${info.max_pct}% dead (avg ${info.avg_pct}%)`,
-      '(click to expand)'
-    ];
+  function zoomToPoint(clientX, clientY, targetZoom) {
+    const rect = viewer.getBoundingClientRect();
+    const scaledX = viewer.scrollLeft + (clientX - rect.left);
+    const scaledY = viewer.scrollTop + (clientY - rect.top);
+    const unscaledX = scaledX / zoom;
+    const unscaledY = scaledY / zoom;
+    animateZoom(
+      targetZoom,
+      unscaledX * targetZoom - viewer.clientWidth / 2,
+      unscaledY * targetZoom - viewer.clientHeight / 2
+    );
   }
 
-  function addSummary(id) {
-    const el = document.getElementById(id);
-    const info = topInfo[id];
-    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    g.setAttribute('class', 'cluster-summary');
-    g.setAttribute('id', id + '-summary');
-    const lines = summaryText(id);
-    lines.forEach((line, i) => {
-      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      t.setAttribute('x', info.x);
-      t.setAttribute('y', info.y + 40 + i * 26);
-      t.setAttribute('text-anchor', 'middle');
-      t.setAttribute('font-family', 'JetBrains Mono, monospace');
-      t.setAttribute('font-size', i === 0 ? '20' : '15');
-      t.setAttribute('font-weight', i === 0 ? '700' : '400');
-      t.setAttribute('fill', i === 3 ? '#d9383a' : '#1a1a1a');
-      t.textContent = line;
-      g.appendChild(t);
-    });
-    el.appendChild(g);
-  }
-
-  function setCollapsed(id, collapsed) {
-    expanded[id] = !collapsed;
-    const topEl = document.getElementById(id);
-    topEl.classList.toggle('collapsed', collapsed);
-    document.querySelectorAll(`[data-top="${id}"]`).forEach(el => {
-      if (el.id === id) return;
-      el.style.display = collapsed ? 'none' : '';
-    });
-    const summary = document.getElementById(id + '-summary');
-    if (summary) summary.style.display = collapsed ? '' : 'none';
-  }
-
-  topIds.forEach(id => {
-    addSummary(id);
-    setCollapsed(id, true);
-    const el = document.getElementById(id);
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      setCollapsed(id, expanded[id]);
-    });
+  viewer.addEventListener('click', (e) => {
+    if (e.target.closest('.dead-node')) return;
+    const target = zoom >= CLOSE_UP_ZOOM * 0.8 ? OVERVIEW_ZOOM : CLOSE_UP_ZOOM;
+    zoomToPoint(e.clientX, e.clientY, target);
   });
+
+  viewer.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    zoomToPoint(e.clientX, e.clientY, OVERVIEW_ZOOM);
+  });
+
+  // Collapse/expand removed — every block is shown expanded by default.
+  const expanded = {};
+  topIds.forEach(id => expanded[id] = true);
 
   function colorFor(pct) {
     const start = [255, 228, 225], end = [255, 0, 0];
