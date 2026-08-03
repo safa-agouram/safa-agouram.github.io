@@ -665,7 +665,7 @@ What all of these approaches presuppose is that one already knows where in the n
 
     <section class="section" id="case-gmic">
       <h2>04 — Case study : GMIC model</h2>
-      <p>We apply the tool to GMIC, a multiple-instance-learning CNN for high-resolution breast-cancer screening images (Shen et al., 2021), using the model and weights released in the authors' repository, <a href="https://github.com/nyukat/GMIC" target="_blank" rel="noopener">nyukat/GMIC</a>.</p>
+      <p>We apply the tool to GMIC, a multiple-instance-learning CNN for high-resolution breast-cancer screening images (Shen et al., 2021), using the model and weights released in the authors' repository, <a href="https://github.com/nyukat/GMIC" target="_blank" rel="noopener">nyukat/GMIC</a>. The goal is to identify the areas of the network exhibiting low neuronal activity. The obtained results were directly integrated into the model's graphical representation, highlighting in red the layers containing inactive neurons, along with the corresponding number and percentage of affected neurons. This visualization provides a global overview of the activation distribution across the different branches of the model (global, local, and fusion branches).</p>
 
       <div style="margin: 2.5rem 0;">
         <iframe
@@ -675,6 +675,9 @@ What all of these approaches presuppose is that one already knows where in the n
         </iframe>
       </div>
     </section>
+
+    <p>The study of dead neurons provides a better understanding of which parts of the network actually contribute to image analysis. It is particularly relevant in the layers responsible for extracting visual features, where inactive neurons may indicate a loss of model capacity. However, in the final decision layers of GMIC, low or negative values are expected. These values correspond to the classification scores produced by the network, representing the contribution level of an activation for a given class. Therefore, they do not necessarily indicate the presence of unused neurons.</p>
+    
 
     <section class="section" id="conclusion">
 
