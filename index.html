@@ -496,6 +496,37 @@
     .nv-title{ font-size:19px; }
   }
 
+  /* Apparition progressive */
+.nv-neuron.appear {
+    opacity: 0;
+    animation: neuronAppear 0.35s ease forwards;
+}
+
+@keyframes neuronAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Clignotement des neurones morts */
+.nv-neuron.dead-blink {
+    animation: deadBlink 0.9s infinite;
+}
+
+@keyframes deadBlink {
+    0%,100%{
+        opacity:1;
+    }
+    50%{
+        opacity:0.2;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -616,7 +647,7 @@ What all of these approaches presuppose is that one already knows where in the n
   <img src="visualisation_cnn.png"
        alt="SmallCNN architecture"
        style="width:100%;
-              max-width:300px;
+              max-width:100px;
               display:block;
               margin:1.5rem auto;
               border:1px solid #ddd;
@@ -880,18 +911,49 @@ What all of these approaches presuppose is that one already knows where in the n
  
     // neurons
     layers.forEach(layer=>{
-      layer.nodes.forEach(node=>{
-        let fill = "var(--surface-2)", stroke = "var(--border-strong)";
-        if(showColor){
-          fill = node.dead ? "var(--dead-dim)" : "var(--active-dim)";
-          stroke = node.dead ? "var(--dead)" : "var(--active)";
-        }
-        svg.appendChild(el("circle", {
-          cx:node.x, cy:node.y, r:9,
-          fill, stroke, "stroke-width":"1.5",
-          class:"nv-neuron"
-        }));
-      });
+        layer.nodes.forEach((node, index)=>{
+    
+            let fill = "var(--surface-2)";
+            let stroke = "var(--border-strong)";
+            let classes = "nv-neuron";
+    
+            if(currentStep >= 2){
+    
+                fill = node.dead
+                    ? "var(--dead)"
+                    : "var(--active)";
+    
+                stroke = fill;
+    
+                // étape 3 : apparition progressive
+                if(currentStep === 2){
+                    classes += " appear";
+                }
+    
+                // étape 4 : les rouges clignotent
+                if(currentStep === 3 && node.dead){
+                    classes += " dead-blink";
+                }
+            }
+    
+            const circle = el("circle",{
+                cx:node.x,
+                cy:node.y,
+                r:9,
+                fill,
+                stroke,
+                "stroke-width":"1.5",
+                class:classes
+            });
+    
+            // délai d'apparition
+            if(currentStep === 2){
+                circle.style.animationDelay = (index*0.12 + layer.x/1200) + "s";
+            }
+    
+            svg.appendChild(circle);
+    
+        });
     });
  
     // data flow dots (step 1)
