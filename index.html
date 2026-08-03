@@ -512,6 +512,14 @@
   padding:8px 12px;
   min-width:100px;
 }
+  .nv-example-label{
+  font-family:var(--font-mono);
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:0.05em;
+  color:var(--text-muted);
+  margin:16px 0 0;
+}
 
 </style>
 </head>
@@ -589,6 +597,8 @@ What all of these approaches presuppose is that one already knows where in the n
     <svg id="nv-svg" viewBox="0 0 900 300" role="img" aria-label="Neural network diagram"></svg>
     <div class="nv-legend" id="nv-legend"></div>
   </div>
+  
+  <p class="nv-example-label" id="nv-example-label"></p>
  
   <div class="nv-stats" id="nv-stats"></div>
 </div>
@@ -955,7 +965,9 @@ What all of these approaches presuppose is that one already knows where in the n
     } else {
       legendEl.innerHTML = `<div class="nv-legend-item">Propagating examples through the network</div>`;
     }
- 
+
+    document.getElementById("nv-example-label").textContent = currentStep === 3 ? "Example analysis" : "";
+    
     // stats (step 4 only)
     statsEl.innerHTML = "";
     if(currentStep === 3){
@@ -979,28 +991,7 @@ What all of these approaches presuppose is that one already knows where in the n
       <span class="nv-stat-label">Inactive ratio</span>
       </div>
       `;
-    }
-
-    // nv-topstats (step 4 only)
-    const topStatsEl = document.getElementById("nv-topstats");
-    topStatsEl.innerHTML = "";
-    topStatsEl.classList.toggle("show", currentStep === 3);
-    if(currentStep === 3){
-      const allNeurons = model.layers.flatMap(l=>l.neurons);
-      const total = allNeurons.length;
-      const dead = allNeurons.filter(d=>d===1).length;
-      topStatsEl.innerHTML = `
-        <div class="nv-stat">
-          <span class="nv-stat-num">${total}</span>
-          <span class="nv-stat-label">Example analysis</span>
-        </div>
-        <div class="nv-stat">
-          <span class="nv-stat-num dead">${dead}</span>
-          <span class="nv-stat-label">Dead in this example</span>
-        </div>
-      `;
-    }
-    
+    }    
   }
  
   render();
