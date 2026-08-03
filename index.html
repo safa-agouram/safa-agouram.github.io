@@ -749,26 +749,237 @@ What all of these approaches presuppose is that one already knows where in the n
 
 <script>
 
-(function(){ const svgNS = "http://www.w3.org/2000/svg"; const steps = [ { title:"Pass data through the model", text:"To analyze a network's internal behavior, data is first propagated through the model. At each layer under study, we can observe the activation values produced by the network." }, { title:"Monitor layers with hooks", text:"PyTorch forward hooks automatically capture layer outputs during data propagation. They provide access to internal activations without altering the model architecture." }, { title:"Analyze activations", text:"The captured activations are analyzed across the dataset. For each layer, neurons that produce no positive activation across all observed examples can be identified." }, { title:"Map analysis to architecture", text:"The activation insights are mapped directly onto the graphical representation of the architecture. Layers containing inactive neurons can thus be identified visually within the network." } ]; 
-            // dead:true => neuron never activated (illustrative) 
-            const model = { layers:[ { name:"Input", neurons:[0,0,0,0] }, { name:"Layer 1", neurons:[0,0,1,0,0,0] }, { name:"Layer 2", neurons:[0,1,0,0,0,1] }, { name:"Layer 3", neurons:[0,0,0,1,0] }, { name:"Layer 4", neurons:[0,1,0,0] }, { name:"Output", neurons:[0,0] } ] }; let currentStep = 0; let currentModel = "cnn"; const stepsEl = document.getElementById("nv-steps"); const descEl = document.getElementById("nv-desc"); const toggleEl = document.getElementById("nv-model-toggle"); const legendEl = document.getElementById("nv-legend"); const statsEl = document.getElementById("nv-stats"); const svg = document.getElementById("nv-svg"); function buildSteps(){ stepsEl.innerHTML = ""; steps.forEach((s,i)=>{ const btn = document.createElement("button"); btn.className = "nv-step-btn" + (i===currentStep ? " active" : ""); btn.innerHTML = <span class="nv-step-num">0${i+1}</span><span class="nv-step-label">${s.title}</span>; btn.addEventListener("click", ()=>{ currentStep = i; render(); }); stepsEl.appendChild(btn); }); } function layoutPositions(layers){ const width = 900, height = 300; const padX = 70, padY = 40; const n = layers.length; const stepX = (width - 2*padX) / (n - 1); return layers.map((layer, li)=>{ const x = padX + li*stepX; const count = layer.neurons.length; const stepY = (height - 2*padY) / (count - 1 || 1); const nodes = layer.neurons.map((dead, ni)=>({ x, y: padY + ni*stepY, dead })); return { name:layer.name, x, nodes }; }); } function el(tag, attrs){ const e = document.createElementNS(svgNS, tag); for(const k in attrs) e.setAttribute(k, attrs[k]); return e; } function render(){ buildSteps(); descEl.textContent = steps[currentStep].text; const layers = layoutPositions(model.layers); svg.innerHTML = ""; 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   // edges between consecutive layers (sparse sample for readability) 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   for(let li=0; li<layers.length-1; li++){ const a = layers[li].nodes, b = layers[li+1].nodes; a.forEach((na, ai)=>{ b.forEach((nb, bi)=>{ if((ai+bi) % 3 === 0){ svg.appendChild(el("path", { d:M${na.x},${na.y} C${(na.x+nb.x)/2},${na.y} ${(na.x+nb.x)/2},${nb.y} ${nb.x},${nb.y}, class:"nv-edge" })); } }); }); } 
-  // layer name labels 
-  layers.forEach(layer=>{ const t = el("text", { x:layer.x, y:284, "text-anchor":"middle", "font-family":"IBM Plex Mono, monospace", "font-size":"11px", fill:"var(--text-muted)" }); t.textContent = layer.name; svg.appendChild(t); }); const showColor = currentStep >= 2; const showHooks = currentStep === 1; const showFlow = currentStep === 0; 
-  // hooks (step 2) 
-  if(showHooks){ layers.forEach(layer=>{ const topY = 18; svg.appendChild(el("line", { x1:layer.x, y1:topY, x2:layer.x, y2:layer.nodes[0].y - 12, class:"nv-hook-line show" })); const tag = el("g", { class:"nv-hook-tag show" }); tag.appendChild(el("rect", { x:layer.x-20, y:topY-14, width:40, height:16, rx:4, fill:"var(--hook)", opacity:"0.18", stroke:"var(--hook)", "stroke-width":"1" })); const label = el("text", { x:layer.x, y:topY-2, "text-anchor":"middle", "font-family":"IBM Plex Mono, monospace", "font-size":"9px", fill:"var(--hook)" }); label.textContent = "hook"; tag.appendChild(label); svg.appendChild(tag); }); } 
-  // neurons 
-  layers.forEach(layer=>{ layer.nodes.forEach(node=>{ let fill = "var(--surface-2)", stroke = "var(--border-strong)"; if(showColor){ fill = node.dead ? "var(--dead-dim)" : "var(--active-dim)"; stroke = node.dead ? "var(--dead)" : "var(--active)"; } svg.appendChild(el("circle", { cx:node.x, cy:node.y, r:9, fill, stroke, "stroke-width":"1.5", class:"nv-neuron" })); }); }); 
-  // data flow dots (step 1) 
-  if(showFlow){ const firstLayer = layers[0]; firstLayer.nodes.forEach((node, i)=>{ const dot = el("circle", { cx:20, cy:node.y, r:4, fill:"var(--text)", class:"nv-flow-dot" }); dot.style.animationDelay = (i*0.15) + "s"; svg.appendChild(dot); 
-                                                                                   // simple traveling dot along a straight path to first layer node 
-                                                                                   const anim = document.createElementNS(svgNS, "animateMotion"); anim.setAttribute("dur", "2.2s"); anim.setAttribute("repeatCount", "indefinite"); anim.setAttribute("path", M0,0 L${node.x-20},0); anim.setAttribute("begin", (i*0.15)+"s"); dot.appendChild(anim); }); 
-  // input marker 
-  const inLabel = el("text", { x:20, y:284, "text-anchor":"middle", "font-family":"IBM Plex Mono, monospace", "font-size":"11px", fill:"var(--text-muted)" }); inLabel.textContent = "input"; svg.appendChild(inLabel); } 
-  // legend 
-  legendEl.innerHTML = ""; if(showColor){ legendEl.innerHTML = <div class="nv-legend-item"><span class="nv-dot" style="background:var(--active)"></span>Active neuron</div> <div class="nv-legend-item"><span class="nv-dot" style="background:var(--dead)"></span>Inactive neuron</div> ; } else if(showHooks){ legendEl.innerHTML = <div class="nv-legend-item"><span class="nv-dot" style="background:var(--hook)"></span>Hook attached to layer</div>; } else { legendEl.innerHTML = <div class="nv-legend-item">Propagating examples through the network</div>; } 
-    // stats (step 4 only) 
+
+(function(){
+  const svgNS = "http://www.w3.org/2000/svg";
+ 
+  const steps = [
+    { title:"Faire passer les données dans le modèle",
+      text:"Pour analyser le comportement interne d'un réseau, des données sont d'abord propagées à travers le modèle. À chaque couche étudiée, il est alors possible d'observer les valeurs produites par le réseau." },
+    { title:"Observer les couches avec des hooks",
+      text:"Les forward hooks de PyTorch permettent de récupérer automatiquement la sortie d'une couche lors du passage des données. Ils offrent ainsi un accès aux activations internes sans modifier l'architecture du modèle." },
+    { title:"Analyser les activations",
+      text:"Les activations récupérées sont ensuite analysées sur l'ensemble des données étudiées. Pour chaque couche, il est possible d'identifier les neurones qui ne produisent aucune activation positive sur les exemples observés." },
+    { title:"Relier l'analyse à l'architecture",
+      text:"L'information obtenue à partir des activations est ensuite associée à la représentation graphique de l'architecture. Les couches présentant des neurones inactifs peuvent ainsi être identifiées directement dans le réseau." }
+  ];
+ 
+  // dead:true => neurone jamais activé (illustratif)
+  const models = {
+    cnn: {
+      label:"CNN — CIFAR-10 (chat / chien)",
+      layers:[
+        { name:"conv1", neurons:[0,0,0,0,0,0,0,1] },
+        { name:"conv2", neurons:[0,0,1,0,0,0,1,0] },
+        { name:"conv3", neurons:[0,1,0,0,1,0] },
+        { name:"fc1",   neurons:[1,0,1,0,1,0] },
+        { name:"fc2",   neurons:[0,1,0,1] }
+      ]
+    },
+    gmic: {
+      label:"GMIC — mammographie",
+      layers:[
+        { name:"backbone-1", neurons:[0,0,0,0,0,0,0,0] },
+        { name:"backbone-2", neurons:[0,0,1,0,0,0,0,0] },
+        { name:"backbone-3", neurons:[0,1,0,1,0,0,1,0] },
+        { name:"local-net",  neurons:[1,0,1,0,1,1,0,0] },
+        { name:"global-net", neurons:[0,1,1,0,1,1,1,0] },
+        { name:"fusion",     neurons:[1,0,1,0,0,0] }
+      ]
+    }
+  };
+ 
+  let currentStep = 0;
+  let currentModel = "cnn";
+ 
+  const stepsEl = document.getElementById("nv-steps");
+  const descEl = document.getElementById("nv-desc");
+  const toggleEl = document.getElementById("nv-model-toggle");
+  const legendEl = document.getElementById("nv-legend");
+  const statsEl = document.getElementById("nv-stats");
+  const svg = document.getElementById("nv-svg");
+ 
+  function buildSteps(){
+    stepsEl.innerHTML = "";
+    steps.forEach((s,i)=>{
+      const btn = document.createElement("button");
+      btn.className = "nv-step-btn" + (i===currentStep ? " active" : "");
+      btn.innerHTML = `<span class="nv-step-num">0${i+1}</span><span class="nv-step-label">${s.title}</span>`;
+      btn.addEventListener("click", ()=>{ currentStep = i; render(); });
+      stepsEl.appendChild(btn);
+    });
+  }
+ 
+  function buildToggle(){
+    toggleEl.innerHTML = "";
+    Object.keys(models).forEach(key=>{
+      const btn = document.createElement("button");
+      btn.className = "nv-model-btn" + (key===currentModel ? " active" : "");
+      btn.textContent = models[key].label;
+      btn.addEventListener("click", ()=>{ currentModel = key; render(); });
+      toggleEl.appendChild(btn);
+    });
+  }
+ 
+  function layoutPositions(layers){
+    const width = 900, height = 300;
+    const padX = 70, padY = 40;
+    const n = layers.length;
+    const stepX = (width - 2*padX) / (n - 1);
+    return layers.map((layer, li)=>{
+      const x = padX + li*stepX;
+      const count = layer.neurons.length;
+      const stepY = (height - 2*padY) / (count - 1 || 1);
+      const nodes = layer.neurons.map((dead, ni)=>({
+        x, y: padY + ni*stepY, dead
+      }));
+      return { name:layer.name, x, nodes };
+    });
+  }
+ 
+  function el(tag, attrs){
+    const e = document.createElementNS(svgNS, tag);
+    for(const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+ 
+  function render(){
+    buildSteps();
+    buildToggle();
+    descEl.textContent = steps[currentStep].text;
+ 
+    const layers = layoutPositions(models[currentModel].layers);
+    svg.innerHTML = "";
+ 
+    // edges between consecutive layers (sparse sample for readability)
+    for(let li=0; li<layers.length-1; li++){
+      const a = layers[li].nodes, b = layers[li+1].nodes;
+      a.forEach((na, ai)=>{
+        b.forEach((nb, bi)=>{
+          if((ai+bi) % 3 === 0){
+            svg.appendChild(el("path", {
+              d:`M${na.x},${na.y} C${(na.x+nb.x)/2},${na.y} ${(na.x+nb.x)/2},${nb.y} ${nb.x},${nb.y}`,
+              class:"nv-edge"
+            }));
+          }
+        });
+      });
+    }
+ 
+    // layer name labels
+    layers.forEach(layer=>{
+      const t = el("text", {
+        x:layer.x, y:284, "text-anchor":"middle",
+        "font-family":"IBM Plex Mono, monospace", "font-size":"11px",
+        fill:"var(--text-muted)"
+      });
+      t.textContent = layer.name;
+      svg.appendChild(t);
+    });
+ 
+    const showColor = currentStep >= 2;
+    const showHooks = currentStep === 1;
+    const showFlow = currentStep === 0;
+ 
+    // hooks (step 2)
+    if(showHooks){
+      layers.forEach(layer=>{
+        const topY = 18;
+        svg.appendChild(el("line", {
+          x1:layer.x, y1:topY, x2:layer.x, y2:layer.nodes[0].y - 12,
+          class:"nv-hook-line show"
+        }));
+        const tag = el("g", { class:"nv-hook-tag show" });
+        tag.appendChild(el("rect", {
+          x:layer.x-20, y:topY-14, width:40, height:16, rx:4,
+          fill:"var(--hook)", opacity:"0.18", stroke:"var(--hook)", "stroke-width":"1"
+        }));
+        const label = el("text", {
+          x:layer.x, y:topY-2, "text-anchor":"middle",
+          "font-family":"IBM Plex Mono, monospace", "font-size":"9px",
+          fill:"var(--hook)"
+        });
+        label.textContent = "hook";
+        tag.appendChild(label);
+        svg.appendChild(tag);
+      });
+    }
+ 
+    // neurons
+    layers.forEach(layer=>{
+      layer.nodes.forEach(node=>{
+        let fill = "var(--surface-2)", stroke = "var(--border-strong)";
+        if(showColor){
+          fill = node.dead ? "var(--dead-dim)" : "var(--active-dim)";
+          stroke = node.dead ? "var(--dead)" : "var(--active)";
+        }
+        svg.appendChild(el("circle", {
+          cx:node.x, cy:node.y, r:9,
+          fill, stroke, "stroke-width":"1.5",
+          class:"nv-neuron"
+        }));
+      });
+    });
+ 
+    // data flow dots (step 1)
+    if(showFlow){
+      const firstLayer = layers[0];
+      firstLayer.nodes.forEach((node, i)=>{
+        const dot = el("circle", {
+          cx:20, cy:node.y, r:4, fill:"var(--text)",
+          class:"nv-flow-dot"
+        });
+        dot.style.animationDelay = (i*0.15) + "s";
+        svg.appendChild(dot);
+ 
+        // simple traveling dot along a straight path to first layer node
+        const anim = document.createElementNS(svgNS, "animateMotion");
+        anim.setAttribute("dur", "2.2s");
+        anim.setAttribute("repeatCount", "indefinite");
+        anim.setAttribute("path", `M0,0 L${node.x-20},0`);
+        anim.setAttribute("begin", (i*0.15)+"s");
+        dot.appendChild(anim);
+      });
+      // input marker
+      const inLabel = el("text", {
+        x:20, y:284, "text-anchor":"middle",
+        "font-family":"IBM Plex Mono, monospace", "font-size":"11px",
+        fill:"var(--text-muted)"
+      });
+      inLabel.textContent = "input";
+      svg.appendChild(inLabel);
+    }
+ 
+    // legend
+    legendEl.innerHTML = "";
+    if(showColor){
+      legendEl.innerHTML = `
+        <div class="nv-legend-item"><span class="nv-dot" style="background:var(--active)"></span>Neurone activé au moins une fois</div>
+        <div class="nv-legend-item"><span class="nv-dot" style="background:var(--dead)"></span>Neurone jamais activé</div>
+      `;
+    } else if(showHooks){
+      legendEl.innerHTML = `<div class="nv-legend-item"><span class="nv-dot" style="background:var(--hook)"></span>Hook posé sur la couche</div>`;
+    } else {
+      legendEl.innerHTML = `<div class="nv-legend-item">Propagation des exemples à travers le réseau</div>`;
+    }
+ 
+    // stats (step 4 only)
+    statsEl.innerHTML = "";
+    if(currentStep === 3){
+      const allNeurons = models[currentModel].layers.flatMap(l=>l.neurons);
+      const total = allNeurons.length;
+      const dead = allNeurons.filter(d=>d===1).length;
+      const pct = Math.round((dead/total)*100);
+      statsEl.innerHTML = `
+        <div class="nv-stat"><span class="nv-stat-num">${total}</span><span class="nv-stat-label">Neurones observés (échantillon)</span></div>
+        <div class="nv-stat"><span class="nv-stat-num dead">${dead}</span><span class="nv-stat-label">Jamais activés</span></div>
+        <div class="nv-stat"><span class="nv-stat-num">${pct}%</span><span class="nv-stat-label">Part inactive</span></div>
+      `;
+    }
+  }
+ 
+  render();
+})();
                                                                                                                                                                                                                                                                                                                                                                                                                                                                    statsEl.innerHTML = ""; if(currentStep === 3){ const allNeurons = model.layers.flatMap(l=>l.neurons); const total = allNeurons.length; const dead = allNeurons.filter(d=>d===1).length; const pct = Math.round((dead/total)*100); statsEl.innerHTML = <div class="nv-stat"> <span class="nv-stat-num">${total}</span> <span class="nv-stat-label">Observed neurons</span> </div> <div class="nv-stat"> <span class="nv-stat-num dead">${dead}</span> <span class="nv-stat-label">Inactive neurons</span> </div> <div class="nv-stat"> <span class="nv-stat-num">${pct}%</span> <span class="nv-stat-label">Inactive ratio</span> </div> ; } } render(); })();
 </script>
 
