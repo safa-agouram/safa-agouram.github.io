@@ -494,6 +494,37 @@
   @media (max-width:640px){
     .nv-steps{ grid-template-columns:repeat(2,1fr); }
     .nv-title{ font-size:19px; }
+  }
+
+  /* Apparition progressive */
+.nv-neuron.appear {
+    opacity: 0;
+    animation: neuronAppear 0.35s ease forwards;
+}
+
+@keyframes neuronAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Clignotement des neurones morts */
+.nv-neuron.dead-blink {
+    animation: deadBlink 0.9s infinite;
+}
+
+@keyframes deadBlink {
+    0%,100%{
+        opacity:1;
+    }
+    50%{
+        opacity:0.2;
+    }
 }
 
 </style>
@@ -562,11 +593,9 @@ What all of these approaches presuppose is that one already knows where in the n
   <div class="nv-steps" id="nv-steps"></div>
   <p class="nv-desc" id="nv-desc"></p>
  
-<div class="nv-model-row">
-  <span class="nv-model-label">Illustrative neural network</span>
-
-  <div class="nv-model-toggle" id="nv-model-toggle"></div>
-</div>
+  <div class="nv-model-row">
+    <span class="nv-model-label">Illustrative neural network</span>
+  </div>
  
   <div class="nv-canvas">
     <svg id="nv-svg" viewBox="0 0 900 300" role="img" aria-label="Neural network diagram"></svg>
@@ -750,44 +779,30 @@ What all of these approaches presuppose is that one already knows where in the n
 
 <script>
 
-
 (function(){
   const svgNS = "http://www.w3.org/2000/svg";
  
   const steps = [
-    { title:"Faire passer les données dans le modèle",
-      text:"Pour analyser le comportement interne d'un réseau, des données sont d'abord propagées à travers le modèle. À chaque couche étudiée, il est alors possible d'observer les valeurs produites par le réseau." },
-    { title:"Observer les couches avec des hooks",
-      text:"Les forward hooks de PyTorch permettent de récupérer automatiquement la sortie d'une couche lors du passage des données. Ils offrent ainsi un accès aux activations internes sans modifier l'architecture du modèle." },
-    { title:"Analyser les activations",
-      text:"Les activations récupérées sont ensuite analysées sur l'ensemble des données étudiées. Pour chaque couche, il est possible d'identifier les neurones qui ne produisent aucune activation positive sur les exemples observés." },
-    { title:"Relier l'analyse à l'architecture",
-      text:"L'information obtenue à partir des activations est ensuite associée à la représentation graphique de l'architecture. Les couches présentant des neurones inactifs peuvent ainsi être identifiées directement dans le réseau." }
+    { title:"Pass data through the model",
+      text:"To analyze a network's internal behavior, data is first propagated through the model. At each layer under study, we can observe the activation values produced by the network." },
+    { title:"Monitor layers with hooks",
+      text:"PyTorch forward hooks automatically capture layer outputs during data propagation. They provide access to internal activations without altering the model architecture." },
+    { title:"Analyze activations",
+      text:"The captured activations are analyzed across the dataset. For each layer, neurons that produce no positive activation across all observed examples can be identified." },
+    { title:"Map analysis to architecture",
+      text:"The activation insights are mapped directly onto the graphical representation of the architecture. Layers containing inactive neurons can thus be identified visually within the network." }
   ];
  
-  // dead:true => neurone jamais activé (illustratif)
-  const models = {
-    cnn: {
-      label:"CNN — CIFAR-10 (chat / chien)",
+  // dead:true => neuron never activated (illustrative)
+  const model = {
       layers:[
-        { name:"conv1", neurons:[0,0,0,0,0,0,0,1] },
-        { name:"conv2", neurons:[0,0,1,0,0,0,1,0] },
-        { name:"conv3", neurons:[0,1,0,0,1,0] },
-        { name:"fc1",   neurons:[1,0,1,0,1,0] },
-        { name:"fc2",   neurons:[0,1,0,1] }
+          { name:"Input",   neurons:[0,0,0,0] },
+          { name:"Layer 1",  neurons:[0,0,1,0,0,0] },
+          { name:"Layer 2",  neurons:[0,1,0,0,0,1] },
+          { name:"Layer 3",  neurons:[0,0,0,1,0] },
+          { name:"Layer 4",  neurons:[0,1,0,0] },
+          { name:"Output",   neurons:[0,0] }
       ]
-    },
-    gmic: {
-      label:"GMIC — mammographie",
-      layers:[
-        { name:"backbone-1", neurons:[0,0,0,0,0,0,0,0] },
-        { name:"backbone-2", neurons:[0,0,1,0,0,0,0,0] },
-        { name:"backbone-3", neurons:[0,1,0,1,0,0,1,0] },
-        { name:"local-net",  neurons:[1,0,1,0,1,1,0,0] },
-        { name:"global-net", neurons:[0,1,1,0,1,1,1,0] },
-        { name:"fusion",     neurons:[1,0,1,0,0,0] }
-      ]
-    }
   };
  
   let currentStep = 0;
@@ -808,17 +823,6 @@ What all of these approaches presuppose is that one already knows where in the n
       btn.innerHTML = `<span class="nv-step-num">0${i+1}</span><span class="nv-step-label">${s.title}</span>`;
       btn.addEventListener("click", ()=>{ currentStep = i; render(); });
       stepsEl.appendChild(btn);
-    });
-  }
- 
-  function buildToggle(){
-    toggleEl.innerHTML = "";
-    Object.keys(models).forEach(key=>{
-      const btn = document.createElement("button");
-      btn.className = "nv-model-btn" + (key===currentModel ? " active" : "");
-      btn.textContent = models[key].label;
-      btn.addEventListener("click", ()=>{ currentModel = key; render(); });
-      toggleEl.appendChild(btn);
     });
   }
  
@@ -846,10 +850,9 @@ What all of these approaches presuppose is that one already knows where in the n
  
   function render(){
     buildSteps();
-    buildToggle();
     descEl.textContent = steps[currentStep].text;
  
-    const layers = layoutPositions(models[currentModel].layers);
+    const layers = layoutPositions(model.layers);
     svg.innerHTML = "";
  
     // edges between consecutive layers (sparse sample for readability)
@@ -908,18 +911,49 @@ What all of these approaches presuppose is that one already knows where in the n
  
     // neurons
     layers.forEach(layer=>{
-      layer.nodes.forEach(node=>{
-        let fill = "var(--surface-2)", stroke = "var(--border-strong)";
-        if(showColor){
-          fill = node.dead ? "var(--dead-dim)" : "var(--active-dim)";
-          stroke = node.dead ? "var(--dead)" : "var(--active)";
-        }
-        svg.appendChild(el("circle", {
-          cx:node.x, cy:node.y, r:9,
-          fill, stroke, "stroke-width":"1.5",
-          class:"nv-neuron"
-        }));
-      });
+        layer.nodes.forEach((node, index)=>{
+    
+            let fill = "var(--surface-2)";
+            let stroke = "var(--border-strong)";
+            let classes = "nv-neuron";
+    
+            if(currentStep >= 2){
+    
+                fill = node.dead
+                    ? "var(--dead)"
+                    : "var(--active)";
+    
+                stroke = fill;
+    
+                // étape 3 : apparition progressive
+                if(currentStep === 2){
+                    classes += " appear";
+                }
+    
+                // étape 4 : les rouges clignotent
+                if(currentStep === 3 && node.dead){
+                    classes += " dead-blink";
+                }
+            }
+    
+            const circle = el("circle",{
+                cx:node.x,
+                cy:node.y,
+                r:9,
+                fill,
+                stroke,
+                "stroke-width":"1.5",
+                class:classes
+            });
+    
+            // délai d'apparition
+            if(currentStep === 2){
+                circle.style.animationDelay = (index*0.12 + layer.x/1200) + "s";
+            }
+    
+            svg.appendChild(circle);
+    
+        });
     });
  
     // data flow dots (step 1)
@@ -955,33 +989,44 @@ What all of these approaches presuppose is that one already knows where in the n
     legendEl.innerHTML = "";
     if(showColor){
       legendEl.innerHTML = `
-        <div class="nv-legend-item"><span class="nv-dot" style="background:var(--active)"></span>Neurone activé au moins une fois</div>
-        <div class="nv-legend-item"><span class="nv-dot" style="background:var(--dead)"></span>Neurone jamais activé</div>
+        <div class="nv-legend-item"><span class="nv-dot" style="background:var(--active)"></span>Active neuron</div>
+        <div class="nv-legend-item"><span class="nv-dot" style="background:var(--dead)"></span>Inactive neuron</div>
       `;
     } else if(showHooks){
-      legendEl.innerHTML = `<div class="nv-legend-item"><span class="nv-dot" style="background:var(--hook)"></span>Hook posé sur la couche</div>`;
+      legendEl.innerHTML = `<div class="nv-legend-item"><span class="nv-dot" style="background:var(--hook)"></span>Hook attached to layer</div>`;
     } else {
-      legendEl.innerHTML = `<div class="nv-legend-item">Propagation des exemples à travers le réseau</div>`;
+      legendEl.innerHTML = `<div class="nv-legend-item">Propagating examples through the network</div>`;
     }
  
     // stats (step 4 only)
     statsEl.innerHTML = "";
     if(currentStep === 3){
-      const allNeurons = models[currentModel].layers.flatMap(l=>l.neurons);
+      const allNeurons = model.layers.flatMap(l=>l.neurons);
       const total = allNeurons.length;
       const dead = allNeurons.filter(d=>d===1).length;
       const pct = Math.round((dead/total)*100);
       statsEl.innerHTML = `
-        <div class="nv-stat"><span class="nv-stat-num">${total}</span><span class="nv-stat-label">Neurones observés (échantillon)</span></div>
-        <div class="nv-stat"><span class="nv-stat-num dead">${dead}</span><span class="nv-stat-label">Jamais activés</span></div>
-        <div class="nv-stat"><span class="nv-stat-num">${pct}%</span><span class="nv-stat-label">Part inactive</span></div>
+      <div class="nv-stat">
+      <span class="nv-stat-num">${total}</span>
+      <span class="nv-stat-label">Observed neurons</span>
+      </div>
+      
+      <div class="nv-stat">
+      <span class="nv-stat-num dead">${dead}</span>
+      <span class="nv-stat-label">Inactive neurons</span>
+      </div>
+      
+      <div class="nv-stat">
+      <span class="nv-stat-num">${pct}%</span>
+      <span class="nv-stat-label">Inactive ratio</span>
+      </div>
       `;
     }
   }
  
   render();
-
 })();
+
 </script>
 
 </body>
