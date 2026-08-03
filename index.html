@@ -656,6 +656,8 @@ What all of these approaches presuppose is that one already knows where in the n
   Figure 1. Architecture of the SmallCNN model used for the initial validation.
 </figcaption>
 
+    <p>This preliminary validation on SmallCNN served as a first step before applying the visualization method to the more complex GMIC architecture. </p>
+
 
   </figure>
 
@@ -665,7 +667,7 @@ What all of these approaches presuppose is that one already knows where in the n
 
     <section class="section" id="case-gmic">
       <h2>04 — Case study : GMIC model</h2>
-      <p>Following the validation of the visualization pipeline on SmallCNN, the method was applied to the GMIC model. GMIC is a multiple-instance-learning CNN for high-resolution breast-cancer screening images, using the model and weights released in the authors' repository, <a href="https://github.com/nyukat/GMIC" target="_blank" rel="noopener">nyukat/GMIC</a>. This model is a more complex architecture combining multiple components, including a global network based on DSNet, a local detection network using ResNet blocks, a MIL attention module, and a fusion branch for the final classification. No fine-tuning was performed for this model, and the pretrained GMIC architecture was directly used for the visualization experiments.               . The goal is to identify the areas of the network exhibiting low neuronal activity. The obtained results were directly integrated into the model's graphical representation, highlighting in red the layers containing inactive neurons, along with the corresponding number and percentage of affected neurons. This visualization provides a global overview of the activation distribution across the different branches of the model (global, local, and fusion branches).</p>
+      <p>Following the validation of the visualization pipeline on SmallCNN, the method was applied to the GMIC model. GMIC is a multiple-instance-learning CNN for high-resolution breast-cancer screening images, using the model and weights released in the authors' repository, <a href="https://github.com/nyukat/GMIC" target="_blank" rel="noopener">nyukat/GMIC</a>. This model is a more complex architecture combining multiple components, including a global network based on DSNet, a local detection network using ResNet blocks, a MIL attention module, and a fusion branch for the final classification. No fine-tuning was performed for this model, and the pretrained GMIC architecture was directly used for the visualization experiments. The goal is to identify the areas of the network exhibiting low neuronal activity. The obtained results were directly integrated into the model's graphical representation, highlighting in red the layers containing inactive neurons, along with the corresponding number and percentage of affected neurons. This visualization provides a global overview of the activation distribution across the different branches of the model (global, local, and fusion branches).</p>
 
       <div style="margin: 2.5rem 0;">
         <iframe
