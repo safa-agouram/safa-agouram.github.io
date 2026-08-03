@@ -514,16 +514,14 @@
 }
 
 /* Clignotement des neurones morts */
-.nv-neuron.dead-blink {
-    animation: deadBlink 0.9s infinite;
+.nv-neuron.colorize {
+    animation: neuronColorize 0.5s ease forwards;
 }
 
-@keyframes deadBlink {
-    0%,100%{
-        opacity:1;
-    }
-    50%{
-        opacity:0.2;
+@keyframes neuronColorize {
+    0%{
+        fill: var(--surface-2);
+        stroke: var(--border-strong);
     }
 }
 
@@ -926,9 +924,9 @@ What all of these approaches presuppose is that one already knows where in the n
                 stroke = fill;
     
                 // étape 3 : apparition progressive
-                if(currentStep === 2){
-                    classes += " appear";
-                }
+              if(currentStep === 2){
+                  classes += " colorize";
+              }
     
                 // étape 4 : les rouges clignotent
                 if(currentStep === 3 && node.dead){
@@ -948,7 +946,7 @@ What all of these approaches presuppose is that one already knows where in the n
     
             // délai d'apparition
             if(currentStep === 2){
-                circle.style.animationDelay = (index*0.12 + layer.x/1200) + "s";
+                circle.style.animationDelay = "0s";
             }
     
             svg.appendChild(circle);
