@@ -496,6 +496,23 @@
     .nv-title{ font-size:19px; }
   }
 
+  @keyframes nv-blink{0%,100%{opacity:1;}50%{opacity:0.25;}}
+.nv-blink{animation:nv-blink 1s ease-in-out infinite;}
+
+.nv-topstats{
+  display:none;
+  gap:12px;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+.nv-topstats.show{ display:flex; }
+.nv-topstats .nv-stat{
+  background:var(--surface-2);
+  border-radius:8px;
+  padding:8px 12px;
+  min-width:100px;
+}
+
 </style>
 </head>
 <body>
@@ -565,6 +582,8 @@ What all of these approaches presuppose is that one already knows where in the n
   <div class="nv-model-row">
     <span class="nv-model-label">Illustrative neural network</span>
   </div>
+
+  <div class="nv-topstats" id="nv-topstats"></div>
  
   <div class="nv-canvas">
     <svg id="nv-svg" viewBox="0 0 900 300" role="img" aria-label="Neural network diagram"></svg>
@@ -613,10 +632,10 @@ What all of these approaches presuppose is that one already knows where in the n
   </p>
 
   <figure>
-  <img src="images/visualisation_cnn.png"
+  <img src="visualisation_cnn.png"
        alt="SmallCNN architecture"
        style="width:100%;
-              max-width:300px;
+              max-width:150px;
               display:block;
               margin:1.5rem auto;
               border:1px solid #ddd;
@@ -886,10 +905,11 @@ What all of these approaches presuppose is that one already knows where in the n
           fill = node.dead ? "var(--dead-dim)" : "var(--active-dim)";
           stroke = node.dead ? "var(--dead)" : "var(--active)";
         }
+        const blink = currentStep === 3 && node.dead ? " nv-blink" : "";
         svg.appendChild(el("circle", {
           cx:node.x, cy:node.y, r:9,
           fill, stroke, "stroke-width":"1.5",
-          class:"nv-neuron"
+          class:"nv-neuron" + blink
         }));
       });
     });
@@ -960,6 +980,27 @@ What all of these approaches presuppose is that one already knows where in the n
       </div>
       `;
     }
+
+    // nv-topstats (step 4 only)
+    const topStatsEl = document.getElementById("nv-topstats");
+    topStatsEl.innerHTML = "";
+    topStatsEl.classList.toggle("show", currentStep === 3);
+    if(currentStep === 3){
+      const allNeurons = model.layers.flatMap(l=>l.neurons);
+      const total = allNeurons.length;
+      const dead = allNeurons.filter(d=>d===1).length;
+      topStatsEl.innerHTML = `
+        <div class="nv-stat">
+          <span class="nv-stat-num">${total}</span>
+          <span class="nv-stat-label">Example analysis</span>
+        </div>
+        <div class="nv-stat">
+          <span class="nv-stat-num dead">${dead}</span>
+          <span class="nv-stat-label">Dead in this example</span>
+        </div>
+      `;
+    }
+    
   }
  
   render();
