@@ -980,8 +980,8 @@ What all of these approaches presuppose is that one already knows where in the n
   }
  
   render();
+
 })();
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                   statsEl.innerHTML = ""; if(currentStep === 3){ const allNeurons = model.layers.flatMap(l=>l.neurons); const total = allNeurons.length; const dead = allNeurons.filter(d=>d===1).length; const pct = Math.round((dead/total)*100); statsEl.innerHTML = <div class="nv-stat"> <span class="nv-stat-num">${total}</span> <span class="nv-stat-label">Observed neurons</span> </div> <div class="nv-stat"> <span class="nv-stat-num dead">${dead}</span> <span class="nv-stat-label">Inactive neurons</span> </div> <div class="nv-stat"> <span class="nv-stat-num">${pct}%</span> <span class="nv-stat-label">Inactive ratio</span> </div> ; } } render(); })();
 </script>
 
 </body>
