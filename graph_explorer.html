@@ -12649,6 +12649,7 @@
     if (e.target.closest('.dead-node')) return;
     const target = zoom >= CLOSE_UP_ZOOM * 0.8 ? OVERVIEW_ZOOM : CLOSE_UP_ZOOM;
     zoomToPoint(e.clientX, e.clientY, target);
+    if (document.activeElement) document.activeElement.blur();
   });
 
   viewer.addEventListener('contextmenu', (e) => {
@@ -12696,10 +12697,12 @@
     const el = document.getElementById(n.id);
     if (el) {
       el.classList.add('dead-node');
+      el.setAttribute('tabindex', '-1');
       el.addEventListener('click', (e) => {
         e.stopPropagation();
         selectNode(n, { skipPan: true });
         zoomToPoint(e.clientX, e.clientY, CLOSE_UP_ZOOM);
+        if (document.activeElement) document.activeElement.blur();
       });
     }
   });
