@@ -110,11 +110,6 @@
   g.node.dead-node { cursor: pointer; }
   g.node.dead-node:hover polygon { stroke: #0f62fe; stroke-width: 2.5; }
 
-  g.cluster[data-istop="true"] { cursor: pointer; }
-  g.cluster[data-istop="true"].collapsed polygon { fill: #fdf2f2; }
-  g.cluster[data-istop="true"]:hover polygon { stroke: #d9383a; stroke-width: 2.5; }
-  .cluster-summary text { pointer-events: none; }
-
 
 
   @media (max-width: 560px) {
@@ -12541,7 +12536,6 @@
   <button id="zoom-reset" title="Reset view">⤢</button>
 </div>
 
-<div class="hint">Click anywhere to zoom in, click again to zoom back out. Cmd/Ctrl + scroll also zooms.</div>
 <div class="now-viewing" id="now-viewing"></div>
 
 <script>
@@ -12615,8 +12609,19 @@
   viewer.addEventListener('wheel', (e) => {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
-      const factor = e.deltaY < 0 ? 1.12 : 1/1.12;
-      setZoomKeepCenter(zoom * factor);
+      // Instant (non-animated) zoom here: trackpad/ctrl+wheel already fires many
+      // events per gesture, so it needs to track 1:1 rather than re-triggering
+      // a smooth animation on every tick (which felt laggy/jittery).
+      if (animId) { cancelAnimationFrame(animId); animId = null; }
+      const factor = e.deltaY < 0 ? 1.06 : 1 / 1.06;
+      const newZoom = Math.max(minZoom, Math.min(maxZoom, zoom * factor));
+      const cx = viewer.scrollLeft + viewer.clientWidth / 2;
+      const cy = viewer.scrollTop + viewer.clientHeight / 2;
+      const ratio = newZoom / zoom;
+      zoom = newZoom;
+      applyZoom();
+      viewer.scrollLeft = cx * ratio - viewer.clientWidth / 2;
+      viewer.scrollTop = cy * ratio - viewer.clientHeight / 2;
     }
   }, { passive: false });
 
@@ -12639,7 +12644,7 @@
   }
 
   viewer.addEventListener('click', (e) => {
-    if (e.target.closest('.dead-node, [data-istop="true"]')) return;
+    if (e.target.closest('.dead-node')) return;
     const target = zoom >= CLOSE_UP_ZOOM * 0.8 ? OVERVIEW_ZOOM : CLOSE_UP_ZOOM;
     zoomToPoint(e.clientX, e.clientY, target);
   });
@@ -12649,62 +12654,9 @@
     zoomToPoint(e.clientX, e.clientY, OVERVIEW_ZOOM);
   });
 
+  // Collapse/expand removed — every block is shown expanded by default.
   const expanded = {};
-  topIds.forEach(id => expanded[id] = false);
-
-  function summaryText(id) {
-    const info = topInfo[id];
-    return [
-      info.label,
-      `${info.n_layers} layers · ${info.n_dead_layers} with dead neurons`,
-      `up to ${info.max_pct}% dead (avg ${info.avg_pct}%)`,
-      '(click to expand)'
-    ];
-  }
-
-  function addSummary(id) {
-    const el = document.getElementById(id);
-    const info = topInfo[id];
-    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    g.setAttribute('class', 'cluster-summary');
-    g.setAttribute('id', id + '-summary');
-    const lines = summaryText(id);
-    lines.forEach((line, i) => {
-      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      t.setAttribute('x', info.x);
-      t.setAttribute('y', info.y + 40 + i * 26);
-      t.setAttribute('text-anchor', 'middle');
-      t.setAttribute('font-family', 'JetBrains Mono, monospace');
-      t.setAttribute('font-size', i === 0 ? '20' : '15');
-      t.setAttribute('font-weight', i === 0 ? '700' : '400');
-      t.setAttribute('fill', i === 3 ? '#d9383a' : '#1a1a1a');
-      t.textContent = line;
-      g.appendChild(t);
-    });
-    el.appendChild(g);
-  }
-
-  function setCollapsed(id, collapsed) {
-    expanded[id] = !collapsed;
-    const topEl = document.getElementById(id);
-    topEl.classList.toggle('collapsed', collapsed);
-    document.querySelectorAll(`[data-top="${id}"]`).forEach(el => {
-      if (el.id === id) return;
-      el.style.display = collapsed ? 'none' : '';
-    });
-    const summary = document.getElementById(id + '-summary');
-    if (summary) summary.style.display = collapsed ? '' : 'none';
-  }
-
-  topIds.forEach(id => {
-    addSummary(id);
-    setCollapsed(id, true);
-    const el = document.getElementById(id);
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      setCollapsed(id, expanded[id]);
-    });
-  });
+  topIds.forEach(id => expanded[id] = true);
 
   function colorFor(pct) {
     const start = [255, 228, 225], end = [255, 0, 0];
@@ -12745,6 +12697,7 @@
       el.addEventListener('click', (e) => {
         e.stopPropagation();
         selectNode(n, { skipPan: true });
+        zoomToPoint(e.clientX, e.clientY, CLOSE_UP_ZOOM);
       });
     }
   });
