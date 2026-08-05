@@ -12539,6 +12539,13 @@
   const topIds = Object.keys(topInfo);
 
   const viewer = document.getElementById('viewer');
+
+  // Prevent buttons from grabbing focus on click — some browsers scroll the
+  // whole embedding page to bring a newly-focused element into view, which
+  // made the iframe jump to the top of the page on every click.
+  document.addEventListener('mousedown', (e) => {
+    if (e.target.closest('button')) e.preventDefault();
+  });
   const inner = document.getElementById('viewer-inner');
   const svg = document.getElementById('graph-svg');
   const svgW = parseFloat(svg.getAttribute('width'));
