@@ -658,7 +658,7 @@ What all of these approaches presuppose is that one already knows where in the n
 
   </figure>
 
-  <p>Observation: no dead neurons were found in the convolutional layers; 15 of the 64 neurons in fc1 (23.4%) never activate. This first, controlled case shows that dead units are not evenly distributed across a network — a question we now examine at a much larger scale with GMIC.</p>
+  <p>Observation: no dead neurons were found in the convolutional layers; 18 of the 64 neurons in fc1 (28.1%) never activate. This first, controlled case shows that dead units are not evenly distributed across a network — a question we now examine at a much larger scale with GMIC.</p>
 
 </section>
 
@@ -679,7 +679,7 @@ What all of these approaches presuppose is that one already knows where in the n
       </div>
     </section>
 
-    <p>The study of dead neurons provides a better understanding of which parts of the network actually contribute to image analysis, particularly in the layers responsible for extracting visual features, where inactive neurons may indicate a loss of model capacity. Observation: about a third of GMIC's convolutional and linear neurons (5.4M of 16.2M, &asymp;33%) never activate on our sample, concentrated overwhelmingly in the global network (86% of all dead neurons) versus the local network (14%). The three final classification layers (the global, local, and fusion output heads) are excluded from this count: since they feed directly into a sigmoid rather than a ReLU, a negative value there reflects a low predicted class score rather than an unused neuron.</p>
+    <p>The study of dead neurons provides a better understanding of which parts of the network actually contribute to image analysis, particularly in the layers responsible for extracting visual features, where inactive neurons may indicate a loss of model capacity. Observation: about a third of GMIC's convolutional and linear neurons (5.4M of 16.2M, &asymp;33%) never activate on our sample, concentrated overwhelmingly in the global network (86% of all dead neurons) versus the local network (14%).</p>
     
 
     <section class="section" id="conclusion">
