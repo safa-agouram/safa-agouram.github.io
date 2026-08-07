@@ -7320,8 +7320,8 @@
   <button id="zoom-out">−</button>
   <span class="zoom-readout" id="zoom-readout">15%</span>
   <button id="zoom-in">+</button>
-  <button id="zoom-reset" title="Reset view">⤢</button>
-  <button id="fullscreen-toggle" title="Agrandir">⛶</button>
+  <button id="zoom-reset" title="Recentrer la vue">⌂</button>
+  <button id="fullscreen-toggle" title="Agrandir">⤢</button>
 </div>
 
 <div class="now-viewing" id="now-viewing"></div>
@@ -7415,7 +7415,7 @@ document.getElementById('zoom-reset').onclick = () => {
       fsBtn.textContent = '⤡';
       fsBtn.title = 'Quitter le plein écran';
     } else {
-      fsBtn.textContent = '⛶';
+      fsBtn.textContent = '⤢';
       fsBtn.title = 'Agrandir';
     }
   }
