@@ -537,9 +537,8 @@
       <li><a href="#method">02 · A generalist mapping tool</a></li>
       <li><a href="#case-smallcnn">03 · Case study — SmallCNN</a></li>
       <li><a href="#case-gmic">04 · Case study — GMIC</a></li>
-      <li><a href="#discussion">05 · Discussion</a></li>
-      <li><a href="#conclusion">06 · Conclusion </a></li>
-      <li><a href="#references">07 · References</a></li>
+      <li><a href="#conclusion">05 · Conclusion </a></li>
+      <li><a href="#references">06 · References</a></li>
     </ol>
   </nav>
 
@@ -688,55 +687,9 @@ What all of these approaches presuppose is that one already knows where in the n
     <p>The study of dead neurons provides a better understanding of which parts of the network actually contribute to image analysis, particularly in the layers responsible for extracting visual features, where inactive neurons may indicate a loss of model capacity. Observation: about a third of GMIC's convolutional and linear neurons (5.4M of 16.2M, &asymp;33%) never activate on our sample, concentrated overwhelmingly in the global network (86% of all dead neurons) versus the local network (14%).</p>
     
 
-    <section class="section" id="discussion">
-
-      
-  <h2>05 — Discussion</h2>
-
-      <span class="eyebrow">Interpreting the results</span>
-
-      <p>
-        If the same regions consistently appear inactive across several independent
-        training runs and data splits, the finding is likely to reflect a structural
-        property of the model rather than the outcome of a particular initialization.
-        In such cases, the visualization can guide subsequent interventions proposed
-        in the literature, including alternative activation functions, improved
-        initialization strategies, or methods that preserve gradient flow through
-        inactive neurons. Conversely, if inactive regions vary substantially between
-        runs, they are more likely to result from initialization effects, making
-        retraining or reinitialization preferable to architectural redesign.
-      </p>
-    
-      <p>
-        On <strong>SmallCNN</strong>, dead units were observed exclusively in the
-        fully connected layer <code>fc1</code> (between 6 and 18 neurons out of 64,
-        depending on the training run), while the convolutional layers
-        <code>conv1</code> and <code>conv2</code> exhibited no dead units. This
-        distribution agrees with previous observations that convolutional feature
-        extractors are less prone to permanently inactive neurons because they process
-        diverse spatial patterns, whereas fully connected layers operate on compressed
-        feature representations where redundancy is lower.
-      </p>
-    
-      <p>
-        On <strong>GMIC</strong>, inactive neurons were detected across several
-        branches of the architecture, with higher concentrations in deeper layers.
-        This observation is also consistent with previous studies showing that the
-        dying ReLU phenomenon tends to become more pronounced as network depth
-        increases. Overall, the moderate dead-unit rates observed in SmallCNN and the
-        more widespread inactivity found in GMIC support the idea that architectural
-        depth and complexity amplify the phenomenon. These findings further motivate
-        the use of the proposed visualization tool as a diagnostic aid for deep neural
-        networks, where identifying inactive regions can provide valuable insight into
-        model behaviour before considering pruning or architectural modifications.
-      </p>
-
-  
-    </section>
-
     <section class="section" id="conclusion">
 
-  <h2>06 — Conclusion</h2>
+  <h2>05 — Conclusion</h2>
 
   <span class="eyebrow">Concluding remarks</span>
 
@@ -769,7 +722,7 @@ What all of these approaches presuppose is that one already knows where in the n
 
 
     <section class="section" id="references">
-      <h2>07 — References</h2>
+      <h2>06 — References</h2>
       <p style="font-size:0.9rem; line-height:1.9;">
         Cai, Z., Huang, K. and Peng, C. (2021). Reborn mechanism: rethinking the negative phase information flow in convolutional neural network. arXiv:2106.07026.<br><br>
         Clevert, D.-A., Unterthiner, T. and Hochreiter, S. (2016). Fast and accurate deep network learning by exponential linear units (ELUs). <em>International Conference on Learning Representations (ICLR)</em>. arXiv:1511.07289.<br><br>
