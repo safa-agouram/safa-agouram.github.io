@@ -533,7 +533,7 @@
 <div class="layout">
   <nav class="toc">
     <ol>
-      <li><a href="#introduction">01 · Why examinig dead ReLu? </a></li>
+      <li><a href="#introduction">01 · Why examining dead ReLU? </a></li>
       <li><a href="#method">02 · A generalist mapping tool</a></li>
       <li><a href="#case-smallcnn">03 · Case study — SmallCNN</a></li>
       <li><a href="#case-gmic">04 · Case study — GMIC</a></li>
@@ -548,7 +548,7 @@
   <section class="section" id="introduction">
 
 
-  <h2> 01 — Why examining dead ReLu? </h2>
+  <h2> 01 — Why examining dead ReLU? </h2>
   <span class="eyebrow">Context</span>
     <p>
   Convolutional neural networks are heavily over-parameterised: the number of trainable weights routinely exceeds the number of training samples, which gives them a strong tendency to memorise rather than generalise on supervised tasks such as classification. The usual remedy is data. For the empirical risk minimiser (ERM) to generalise — that is, for its true risk under the underlying distribution P to stay close to the empirical risk it was trained to minimise — one draws a training set from P large enough for the two to coincide. In medical imaging that remedy is often unavailable: ground-truth labels require expert annotation and, for endpoints such as biopsy-confirmed malignancy, are both expensive and technically difficult to obtain.
@@ -641,7 +641,7 @@ What all of these approaches presuppose is that one already knows where in the n
 </div>
 
 <section class="section" id="case-smallcnn">
-  <h2>03 — Case study : SmallCNN architectur</h2>
+  <h2>03 — Case study : SmallCNN architecture</h2>
 
   <p>
     As an initial validation of the proposed visualization pipeline, we applied our method to a lightweight convolutional neural network (SmallCNN). The architecture consists of two convolutional layers, each followed by a ReLU activation function and a max-pooling operation, and two fully connected layers with a ReLU activation after the first fully connected layer. The network was trained on a binary classification task derived from the CIFAR-10 dataset (cat vs. dog) for 10 epochs using a learning rate of <code>1 × 10<sup>−4</sup></code>. The best-performing checkpoint, achieving a test accuracy close to 70%, was selected for all subsequent visualization experiments. The resulting architecture is illustrated below.
